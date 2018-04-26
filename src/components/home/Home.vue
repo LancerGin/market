@@ -18,7 +18,7 @@
 
 <script>
 import {SearchBar,Button} from 'vue-weui';
-import HotArea from '@/components/children/HotArea.vue';
+import HotArea from '@/components/home/HotArea.vue';
 
 export default {
   name: 'home',
@@ -49,8 +49,8 @@ export default {
         {value:"包包"}
       ],
       hotArea:[
-        {value:"潮流之选"},
-        {value:"爆款专区"}
+        {id:"777",value:"潮流之选"},
+        {id:"777",value:"爆款专区"}
       ]
     }
   },
@@ -59,7 +59,36 @@ export default {
     'weui-button': Button,
     'hot-area':HotArea
   },
+  mounted(){
+    this.getIndexInfo();
+  },
   methods: {
+    getIndexInfo(){
+      // this.$http.get(this.GLOBAL.serverSrc + "rest/index/search",{credentials: false})
+      //           .then(function (response) {
+      //
+      //           })
+      //         .catch(function (response) {
+      //             console.log("获取首页信息-请求错误：", response)
+      //         });
+      var xhr = new XMLHttpRequest();
+
+      xhr.open("GET", this.GLOBAL.serverSrc + "rest/index/search", true);
+      xhr.setRequestHeader("TOKEN",this.GLOBAL.token);
+      xhr.onload = function (e) {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+          } else {
+            console.error(xhr.statusText);
+          }
+        }
+      };
+      xhr.onerror = function (e) {
+        console.error(xhr.statusText);
+      };
+      xhr.send(null);
+    },
     openSearchPage(){
       this.$router.push('/search');
     }
@@ -71,7 +100,7 @@ export default {
 <style scoped>
 @font-face {
   font-family: hyqk;
-  src: url('../assets/fonts/hyqk.ttf');
+  src: url('../../assets/fonts/hyqk.ttf');
 }
 .swiper {
     height: 200px;
