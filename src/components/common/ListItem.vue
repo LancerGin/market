@@ -1,9 +1,9 @@
 <template>
   <div class="list_item">
-    <img v-bind:src="listItem.imgUrl" alt="">
-    <h3>{{listItem.title}}</h3>
-    <p>{{listItem.describe}}</p>
-    <p class="price">￥{{listItem.nowprice}}</p>
+    <img v-bind:src="listItem.keyfrom" alt="">
+    <h3>{{listItem.proname}}</h3>
+    <p>{{listItem.prodescribe}}</p>
+    <p class="price">￥{{listItem.showprice}}</p>
   </div>
 </template>
 

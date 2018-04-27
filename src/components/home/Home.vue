@@ -1,8 +1,8 @@
 <template>
   <div class="home">
-    <wc-swiper :duration="500" :interval="2000" class="swiper">
+    <wc-swiper v-if="slides.length" :duration="500" :interval="2000" class="swiper">
        <wc-slide v-for="(slide, key) in slides" :key="key">
-         <img v-bind:src="slide.url" alt="slide.title">
+         <img v-bind:src="slide.img" alt="slide.bannerid">
        </wc-slide>
     </wc-swiper>
     <search-bar placeholder="搜索商品" ></search-bar>
@@ -18,26 +18,13 @@
 
 <script>
 import {SearchBar,Button} from 'vue-weui';
-import HotArea from '@/components/children/HotArea.vue';
+import HotArea from '@/components/home/HotArea.vue';
 
 export default {
   name: 'home',
   data () {
     return {
-      slides:[
-        {
-          title:"图片1",
-          url:"./static/img/1.png"
-        },
-        {
-          title:"图片3",
-          url:"./static/img/3.png"
-        },
-        {
-          title:"图片4",
-          url:"./static/img/4.jpg"
-        }
-      ],
+      slides:[],
       hotWords: [
         {value:"家居"},
         {value:"美护"},
@@ -48,10 +35,7 @@ export default {
         {value:"饰品"},
         {value:"包包"}
       ],
-      hotArea:[
-        {value:"潮流之选"},
-        {value:"爆款专区"}
-      ]
+      hotArea:[]
     }
   },
   components: {
@@ -59,7 +43,27 @@ export default {
     'weui-button': Button,
     'hot-area':HotArea
   },
+  mounted (){
+    this.getIndexInfo();
+  },
   methods: {
+    getIndexInfo(){
+      this.$http.get(this.GLOBAL.serverSrc + "rest/index/search",{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                    let obj =  response.data.data;
+                    let banners = obj.banner;
+                    this.$set(this,"slides",banners);
+                    let productList = obj.productList;
+                    this.$set(this,"hotArea",productList);
+                  }else{
+
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取首页信息-请求错误：", response)
+              });
+    },
     openSearchPage(){
       this.$router.push('/search');
     }
@@ -71,7 +75,7 @@ export default {
 <style scoped>
 @font-face {
   font-family: hyqk;
-  src: url('../assets/fonts/hyqk.ttf');
+  src: url('../../assets/fonts/hyqk.ttf');
 }
 .swiper {
     height: 200px;
