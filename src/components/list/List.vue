@@ -5,7 +5,9 @@
 </template>
 
 <script>
+
 import ListItem from '@/components/common/ListItem.vue';
+
 export default {
   name: 'List',
   data () {
@@ -58,6 +60,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .list{
   width: 100%;
   height:auto;
@@ -69,4 +72,5 @@ export default {
   height: 0;
   clear: both;
 }
+
 </style>
