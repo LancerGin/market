@@ -1,11 +1,11 @@
 <template>
   <div class="home">
     <wc-swiper v-if="slides.length" :duration="500" :interval="2000" class="swiper">
-       <wc-slide v-for="(slide, key) in slides" :key="key">
+       <wc-slide v-for="(slide, key) in slides" :key="key" class="cover" >
          <img v-bind:src="slide.img" alt="slide.bannerid">
        </wc-slide>
     </wc-swiper>
-    <search-bar placeholder="搜索商品" ></search-bar>
+    <div class="cover_weui"><search-bar placeholder="搜索商品" ></search-bar></div>
     <div class="cover_search" v-on:click="openSearchPage"></div>
     <div class="hot_words">
       <ul>
@@ -73,18 +73,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-@font-face {
-  font-family: hyqk;
-  src: url('../../assets/fonts/hyqk.ttf');
-}
+
 .swiper {
-    height: 200px;
+    height: 2rem;
 }
 .cover_search{
     width: 100%;
-    height: 44px;
+    height: .44rem;
     position: absolute;
-    top: 200px;
+    top: 2rem;
     left: 0;
     z-index:11;
 }
@@ -98,9 +95,9 @@ export default {
   display: block;
   float: left;
   width: 25%;
-  padding:10px 0;
-  font-family: hyqk;
-  font-size:1.2rem;
+  padding:.1rem 0;
+  font-size:.18rem;
+  font-weight:bold;
   color:#99CC99;
 }
 </style>

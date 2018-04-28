@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import "@/assets/js/style.js";
 export default {
   name: 'App'
 }

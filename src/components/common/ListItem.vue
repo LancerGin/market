@@ -1,9 +1,14 @@
 <template>
   <div class="list_item">
-    <img v-bind:src="listItem.keyfrom" alt="">
-    <h3>{{listItem.proname}}</h3>
-    <p>{{listItem.prodescribe}}</p>
+    <div v-on:click="lookDetails(hotItem.proid)">
+      <div class="img cover">
+        <img v-bind:src="hotItem.keyfrom" alt="">
+      </div>
+      <h3>{{listItem.proname}}</h3>
+      <p>{{listItem.prodescribe}}</p>
+    </div>
     <p class="price">￥{{listItem.showprice}}</p>
+    <div class="shopping_cart"><i class="fa fa-shopping-cart"></i></div>
   </div>
 </template>
 
@@ -47,8 +52,8 @@ export default {
 }
 .list_item h3{
   text-align: left;
-  padding:6px 3px;
-  font-size: 1.1rem;
+  padding:.06rem .03rem;
+  font-size: .18rem;
   color:#333333;
 }
 .list_item p{
@@ -57,13 +62,22 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.8rem;
+  font-size: 0.1rem;
   color:#999999;
 }
 .list_item p.price{
-  margin: 12px 0;
-  font-size: 1.1rem;
+  margin: .12rem 0;
+  font-size: .18rem;
   color:#99CC99;
+}
+.shopping_cart{
+  float: right;
+  line-height: .1rem;
+  font-size: .1rem;
+  margin: .14rem 0 0 .02rem;
+  padding: .04rem .02rem .02rem .02rem;
+  color:#99CC99;
+  border-color: #99CC99;
 }
 
 </style>

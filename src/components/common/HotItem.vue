@@ -1,6 +1,8 @@
 <template>
   <div class="list_item" v-on:click="lookDetails(hotItem.proid)">
-    <img v-bind:src="hotItem.keyfrom" alt="">
+    <div class="img cover">
+      <img v-bind:src="hotItem.keyfrom" alt="">
+    </div>
     <h3>{{hotItem.proname}}</h3>
     <p class="prodescribe">{{hotItem.prodescribe}}</p>
     <div class="close"><i class="fa fa-times"></i></div>
@@ -47,16 +49,17 @@ export default {
   float: left;
   background-color: #ffffff;
 }
-.list_item img{
-  width: 96%;
+.list_item .img{
+  width: 100%;
+  height: 1.5rem;
 }
 .list_item h3{
   text-align: left;
-  padding:6px 3px;
+  padding:.06rem .03rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1.1rem;
+  font-size: 0.16rem;
   color:#333333;
 }
 .list_item p{
@@ -65,12 +68,12 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.82rem;
+  font-size: 0.14rem;
   color:#999999;
 }
 .list_item p.prodescribe{
   display: block;
-  padding-bottom: 10px;
+  padding-bottom: .1rem;
   border-bottom: 1px solid #99CC99;
 }
 .list_item div.close{
@@ -78,36 +81,36 @@ export default {
   height: 1px;
 }
 .list_item div.close>i{
-  font-size: .8rem;
+  font-size: .12rem;
   position: absolute;
   left: 50%;
-  bottom: -.2rem;
-  margin-left: -.4rem;
+  bottom: -0.04rem;
+  margin-left: -0.06rem;
   color:#99CC99;
 }
 .list_item p.showprice{
   float: left;
-  margin: 1rem 0;
-  font-size: .9rem;
+  margin: .1rem 0;
+  font-size: .14rem;
   color:#99CC99;
 }
 .list_item p.showprice span{
-  font-size: .7rem;
+  font-size: .12rem;
   color:#99CC99;
 }
 .list_item p.showoldprice{
   float: left;
-  margin: 1.3rem 0 0 .2rem;
+  margin: .14rem 0 0 .02rem;
   text-decoration:line-through;
-  font-size: 0.7rem;
+  font-size: 0.1rem;
   color:#999999;
 }
 .list_item a.weui_btn.weui_btn_mini{
   float: right;
-  line-height: 1rem;
-  font-size: .6rem;
-  margin: 1.2rem 0 0 .2rem;
-  padding: .2rem .2rem 0 .2rem;
+  line-height: .1rem;
+  font-size: .1rem;
+  margin: .14rem 0 0 .02rem;
+  padding: .04rem .02rem .02rem .02rem;
   color:#99CC99;
   border-color: #99CC99;
 }
