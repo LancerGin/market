@@ -1,6 +1,6 @@
 <script>
 const serverSrc='http://www.wodesh.cn/shop-mserver/';
-const token='QVBQX1RPS0VOXzc1OGQzMjA1NTUwOTRlNDM4ZGQzNzRlN2ZlYmMzM2U5JjE1MjQ4MzQ1MTY2NTk=';
+const token='QVBQX1RPS0VOXzc1OGQzMjA1NTUwOTRlNDM4ZGQzNzRlN2ZlYmMzM2U5JjE1MjUwNzc1MTc1NTE=';
 const hasEnter=false;
 const userSite="中国钓鱼岛";
   export default

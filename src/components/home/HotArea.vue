@@ -1,8 +1,9 @@
+<!-- 首页热门专栏模块 -->
 <template>
   <div class="hot_area">
     <h2>{{hot.title}}</h2>
     <div class="cover_weui">
-      <weui-button type="default" :plain="true" :mini="true" v-on:click.native="lookMore(hot.id)">查看更多</weui-button>
+      <weui-button type="default" :plain="true" :mini="true" v-on:click.native="lookList('byCutpage',hot.id)">查看更多</weui-button>
     </div>
     <div class="list">
       <hot-item v-for="(item, key) in hot.productList" :key="key" v-bind:hotItem="item" />
@@ -32,8 +33,8 @@ export default {
     'hot-item': HotItem
   },
   methods: {
-    lookMore(id){
-      this.$router.push({ name: 'List', params: { key: "byId",value: id }});
+    lookList(key,value){
+      this.$router.push({ name: 'List', params: { key: key,value: value }});
     }
   }
 }

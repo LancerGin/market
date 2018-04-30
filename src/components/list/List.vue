@@ -1,6 +1,8 @@
+<!-- 商品列表 -->
 <template>
   <div class="list">
     <list-item v-for="(item, key) in list" :key="key" v-bind:listItem="item" />
+    <div v-if="list.length===0" class="nodata">没有找到相关商品QAQ</div>
   </div>
 </template>
 
@@ -12,32 +14,13 @@ export default {
   name: 'List',
   data () {
     return {
-      list :[
-        {
-          imgUrl:"./static/img/1.png",
-          title:"吊带连衣裙套装",
-          describe:"纯色纯色高端大气高端",
-          nowprice:"199"
-        },
-        {
-          imgUrl:"./static/img/1.png",
-          title:"吊带连衣裙套装",
-          describe:"纯色纯色高端大气高端大气大气大气",
-          nowprice:"234"
-        },
-        {
-          imgUrl:"./static/img/1.png",
-          title:"吊带连衣裙套装",
-          describe:"纯色纯色高端大气高端",
-          nowprice:"166"
-        },
-        {
-          imgUrl:"./static/img/1.png",
-          title:"吊带连衣裙套装",
-          describe:"纯色纯色高端大气高端",
-          nowprice:"178"
-        }
-      ]
+      sValue:"", //查询列表的条件值
+      sKey:"",   //查询列表的方式
+      keywords:"",
+      typechild:"",
+      type:"",
+      showpage:1, //页码
+      list :[]
     }
   },
   mounted(){
@@ -48,11 +31,64 @@ export default {
   },
   methods: {
     getParams(){
-      const params = this.$route.params;
-      console.log(params);
+      let params = {};
+      if(this.$route.params.value){
+        sessionStorage.setItem('list_params',JSON.stringify(this.$route.params));
+        params = this.$route.params;
+      }else{
+        params = JSON.parse(sessionStorage.getItem('list_params'));
+      }
+      this.$set(this,"sValue",params.value);
+      this.$set(this,"sKey",params.key);
+      this.getList();
     },
-    lookDetails(){
-      this.$router.push('/details');
+    getList(){
+      if(this.sKey==="byCutpage"){
+        this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
+          "page":this.showpage,
+        	"size":8,
+        	"typeid":this.sValue
+        },{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                      let obj =  response.data.data;
+                      this.$set(this,"list",obj);
+                    }else{
+
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("获取商品列表-请求错误：", response)
+                });
+      }else{
+        if(this.sKey==="byKeywords"){
+          this.keywords = this.sValue;
+        }else if(this.sKey==="byTypechild"){
+          this.typechild = this.sValue;
+        }else if(this.sKey==="byType"){
+          this.type = this.sValue;
+        }
+        this.$http.post(this.GLOBAL.serverSrc + "rest/product/search",{
+          "page":this.showpage,
+        	"size":8,
+        	"status":1,
+        	"keywords":this.keywords,
+        	"typechild":this.typechild,
+        	"type":this.type
+        },{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                      let obj =  response.data.data;
+                      this.$set(this,"list",obj);
+                    }else{
+
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("获取商品列表-请求错误：", response)
+                });
+      }
+
     }
   }
 }
@@ -72,5 +108,9 @@ export default {
   height: 0;
   clear: both;
 }
-
+.nodata{
+  padding: .3rem 0;
+  font-size: .14rem;
+  color:#999999;
+}
 </style>

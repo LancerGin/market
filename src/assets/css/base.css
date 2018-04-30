@@ -19,7 +19,6 @@ h1, h2, h3, h4, h5, h6 {
 a, a:link, a:visited, a:hover, a:active {
   outline: none;
   text-decoration: none;
-  display: inline-block;
   color: #646464;
 }
 

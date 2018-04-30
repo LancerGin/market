@@ -1,3 +1,4 @@
+<!-- 首页热门专栏下的商品模块 -->
 <template>
   <div class="list_item" v-on:click="lookDetails(hotItem.proid)">
     <div class="img cover">
@@ -32,8 +33,8 @@ export default {
     'weui-button': Button
   },
   methods: {
-    lookDetails(id){
-      this.$router.push('/details');
+    lookDetails(proid){
+      this.$router.push({ name: 'Details', params: { key: "byId",value: proid }});
     }
   }
 }
