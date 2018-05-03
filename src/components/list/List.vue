@@ -59,6 +59,7 @@ export default {
                   .then(function (response) {
                     if(response.data.code==="0000"){
                       this.pushData(response.data.data);
+                      this.onScroll();
                     }else{
 
                     }
@@ -85,6 +86,7 @@ export default {
                   .then(function (response) {
                     if(response.data.code==="0000"){
                       this.pushData(response.data.data);
+                      this.onScroll();
                     }else{
 
                     }
@@ -118,7 +120,7 @@ export default {
         return scrollTop;
     },
     getScrollHeight(){
-  　　var scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+      let scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
   　　if(document.body){
   　　　　bodyScrollHeight = document.body.scrollHeight;
   　　}
@@ -129,7 +131,7 @@ export default {
   　　return scrollHeight;
     },
     getWindowHeight(){
-    　　var windowHeight = 0;
+    　　let windowHeight = 0;
     　　if(document.compatMode == "CSS1Compat"){
     　　　　windowHeight = document.documentElement.clientHeight;
     　　}else{
@@ -137,14 +139,24 @@ export default {
     　　}
     　　return windowHeight;
     },
-    addPages(){
+    onScroll(){
       let _this = this;
       window.onscroll = function(){
-    　　if(_this.getScrollTop() + _this.getWindowHeight() == _this.getScrollHeight()){
-    　　　　 _this.showpage++;
-            _this.getList();
-    　　}
-      };
+        _this.addPages();
+      }
+      // window.touchmove = function(){
+      //   _this.addPages();
+      //
+      // }
+    },
+    addPages(){
+      let _this = this;
+      //下一页还有内容并且
+      //滚动到页面的 0.7倍高度的时候请求下一页的数据
+  　　if(this.nomore===false&&_this.getScrollTop() + _this.getWindowHeight() >= 0.7*(_this.getScrollHeight())){
+  　　　　 _this.showpage++;
+          _this.getList();
+  　　}
     }
   }
 }

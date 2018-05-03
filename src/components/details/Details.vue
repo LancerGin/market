@@ -33,7 +33,7 @@
     <!-- 挑选及评价信息 开始 -->
     <div class="buy cover_weui">
       <cells type="access">
-        <link-cell link="javascript:void(0);">
+        <link-cell link="javascript:void(0);" v-bind:click.native="toChoose()">
           <span slot="body">选择：分类</span>
           <span slot="footer"></span>
         </link-cell>
@@ -70,12 +70,18 @@
       <img v-for="(slide, key) in slides" v-bind:src="slide.url" alt="slide.type">
     </div>
     <!-- 商品详情介绍 结束 -->
+    <!-- 弹出选择规格的面板 开始-->
+    <div class="choosespec_container">
+      <ChooseSpec></ChooseSpec>
+    </div>
+    <!-- 弹出选择规格的面板 结束-->
   </div>
 </template>
 
 <script>
   import {Button,CellsTitle, CellsTips,
     Cells, Cell, LinkCell,Icon} from 'vue-weui';
+  import ChooseSpec from '@/components/common/ChooseSpec.vue';
 
   export default {
     name: 'Details',
@@ -101,7 +107,8 @@
       Cells,
       Cell,
       LinkCell,
-      Icon
+      Icon,
+      ChooseSpec
     },
     mounted (){
       this.getParams();

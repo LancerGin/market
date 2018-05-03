@@ -1,17 +1,51 @@
 <!-- 购买时选择商品规格 -->
 <template>
   <div class="spec">
+    <div class="pan">
+      <div class="head">
+        <div class="img">
+          <img src="" alt="">
+        </div>
+        <div class="title">
+          还便于与第三方库或既有项目整合
+        </div>
+        <div class="icon">
+          <icon name="cancel_circle"></icon>
+        </div>
+      </div>
+      <div class="body">
+        <div class="field_title">
+          颜色：
+        </div>
+        <div class="field_body">
+          <div class="field">蓝色</div>
+          <div class="field">绿色</div>
+          <div class="field">紫色</div>
+        </div>
+        <div class="spec_title">
+          尺寸：
+        </div>
+        <div class="spec_body">
+          <div class="spec">大</div>
+          <div class="spec">中</div>
+          <div class="spec">小</div>
+        </div>
+      </div>
+      <div class="count">
 
+      </div>
+      <weui-button type="default" :plain="true" :mini="true">点击购买</weui-button>
+    </div>
   </div>
 </template>
 
 <script>
-import {Icon} from 'vue-weui';
+import {Icon,Button} from 'vue-weui';
 
 export default {
   name: 'specItem',
   props: {
-    specItem: {
+    specObj: {
       type: Object,
       required: true
     }
@@ -19,11 +53,12 @@ export default {
   data () {
     return {
       fieldid:null,
-
+      specItem: this.specObj
     }
   },
   components: {
-    Icon
+    Icon,
+    'weui-button': Button
   },
   methods: {
     addToShopCart(){
@@ -38,7 +73,7 @@ export default {
                   }
                 })
               .catch(function (response) {
-                  console.log("获取商品详情-请求错误：", response)
+                  console.log("添加到购物车-请求错误：", response)
               });
     }
   }
@@ -47,80 +82,41 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.list_item{
-  width: 48%;
-  margin: 1%;
-  padding: 2%;
-  overflow: hidden;
-  float: left;
-  background-color: #ffffff;
-  border-radius: 6px;
-  border:1px solid #eee;
-}
-.list_item .img{
-  width: 100%;
-  height: 1.5rem;
-}
-.list_item h3{
-  text-align: left;
-  padding:.06rem .03rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.14rem;
-  color:#333333;
-}
-.list_item p{
-  text-align: left;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.12rem;
-  color:#999999;
-}
-.list_item p.prodescribe{
-  display: block;
-  padding-bottom: .1rem;
-  border-bottom: 1px solid #99CC99;
-}
-.list_item div.close{
-  position: relative;
-  height: 1px;
-}
-.list_item div.close>i{
-  font-size: .12rem;
-  position: absolute;
-  left: 50%;
-  bottom: -0.04rem;
-  margin-left: -0.06rem;
-  color:#99CC99;
-}
-.list_item p.showprice{
-  float: left;
-  margin: .1rem 0;
-  font-size: .14rem;
-  color:#99CC99;
-}
-.list_item p.showprice span{
-  font-size: .12rem;
-  color:#99CC99;
-}
-.list_item p.showoldprice{
-  float: left;
-  margin: .14rem 0 0 .02rem;
-  text-decoration:line-through;
-  font-size: 0.1rem;
-  color:#999999;
-}
-.shopping_cart{
-  float: right;
-  line-height: .1rem;
-  font-size: .16rem;
-  margin: .14rem 0 0 .02rem;
-  padding: .04rem .02rem .02rem .02rem;
-  color:#99CC99;
-  border-color: #99CC99;
-}
+  .spec{
+    position: fixed;
+    top:0;
+    left:0;
+    z-index: 2;
+    background-color: rgba(0,0,0,0.2);
+  }
+  .pan{
+    width:100%;
+    height:3rem;
+    position: fixed;
+    bottom:0;
+    left:0;
+    z-index: 3;
+  }
+  .pan .head{
+    width:100%;
+    position: relative;
+  }
+  .pan .head .img{
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #cccccc;
+  }
+  .pan .head .title{
+    text-align: left;
+    padding:.06rem .03rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.14rem;
+    color:#333333;
+  }
+  .pan .head .icon{
+    position: absolute;
+  }
 
 </style>
