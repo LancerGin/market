@@ -1,8 +1,13 @@
 <!-- 商品列表 -->
 <template>
-  <div class="list">
-    <list-item v-for="(item, key) in list" :key="key" v-bind:listItem="item" />
-    <div v-if="list.length===0" class="nodata">没有找到相关商品QAQ</div>
+  <div>
+    <div class="list">
+      <list-item v-for="(item, key) in list" :key="key" v-bind:listItem="item" />
+      <div v-if="list.length===0" class="nodata">没有找到相关商品QAQ</div>
+    </div>
+    <div v-if="nomore" class="nomore">
+      <span>没有更多啦~</span>
+    </div>
   </div>
 </template>
 
@@ -20,6 +25,8 @@ export default {
       typechild:"",
       type:"",
       showpage:1, //页码
+      pageSize:8, //分页后每次请求的数据量
+      nomore:false,
       list :[]
     }
   },
@@ -46,13 +53,12 @@ export default {
       if(this.sKey==="byCutpage"){
         this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
           "page":this.showpage,
-        	"size":8,
+        	"size":this.pageSize,
         	"typeid":this.sValue
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
-                      let obj =  response.data.data;
-                      this.$set(this,"list",obj);
+                      this.pushData(response.data.data);
                     }else{
 
                     }
@@ -70,7 +76,7 @@ export default {
         }
         this.$http.post(this.GLOBAL.serverSrc + "rest/product/search",{
           "page":this.showpage,
-        	"size":8,
+        	"size":this.pageSize,
         	"status":1,
         	"keywords":this.keywords,
         	"typechild":this.typechild,
@@ -78,8 +84,7 @@ export default {
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
-                      let obj =  response.data.data;
-                      this.$set(this,"list",obj);
+                      this.pushData(response.data.data);
                     }else{
 
                     }
@@ -89,6 +94,57 @@ export default {
                 });
       }
 
+    },
+    pushData(msg){
+      let obj = msg;
+      let len = obj.length;
+      //返回的数据条数不足 this.pageSize，说明是最后一页了
+      if(len<this.pageSize){
+        this.nomore===true;
+      }
+      for(let i=0;i<len;i++){
+        this.list.push(obj[i]);
+      }
+    },
+    getScrollTop(){
+      let scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
+      if(document.body){
+        bodyScrollTop = document.body.scrollTop;
+      }
+      if(document.documentElement){
+        documentScrollTop = document.documentElement.scrollTop;
+      }
+        scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
+        return scrollTop;
+    },
+    getScrollHeight(){
+  　　var scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+  　　if(document.body){
+  　　　　bodyScrollHeight = document.body.scrollHeight;
+  　　}
+  　　if(document.documentElement){
+  　　　　documentScrollHeight = document.documentElement.scrollHeight;
+  　　}
+  　　scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
+  　　return scrollHeight;
+    },
+    getWindowHeight(){
+    　　var windowHeight = 0;
+    　　if(document.compatMode == "CSS1Compat"){
+    　　　　windowHeight = document.documentElement.clientHeight;
+    　　}else{
+    　　　　windowHeight = document.body.clientHeight;
+    　　}
+    　　return windowHeight;
+    },
+    addPages(){
+      let _this = this;
+      window.onscroll = function(){
+    　　if(_this.getScrollTop() + _this.getWindowHeight() == _this.getScrollHeight()){
+    　　　　 _this.showpage++;
+            _this.getList();
+    　　}
+      };
     }
   }
 }
@@ -99,8 +155,7 @@ export default {
 
 .list{
   width: 100%;
-  height:auto;
-  background-color: #f2f2f2;
+  padding: 1%;
 }
 .list:after{
   content: "\0020";
@@ -112,5 +167,9 @@ export default {
   padding: .3rem 0;
   font-size: .14rem;
   color:#999999;
+}
+.nomore{
+  font-size:.12rem;
+  padding: .1rem 0;
 }
 </style>

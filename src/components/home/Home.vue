@@ -117,6 +117,9 @@ export default {
       left: 0;
       z-index:11;
   }
+  .hot_words{
+    background-color: #ffffff;
+  }
   .hot_words:after{
     content: "\0020";
     display: block;
@@ -136,7 +139,6 @@ export default {
   .nomore{
     font-size:.12rem;
     padding: .1rem 0;
-    background-color: #f2f2f2;
   }
 
   .navbar{

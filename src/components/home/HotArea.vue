@@ -44,6 +44,7 @@ export default {
 <style scoped>
 .hot_area {
     width: 100%;
+    background-color: #ffffff;
 }
 h2{
     padding:.06rem 0;
@@ -55,6 +56,7 @@ h2{
   height:auto;
   background-color: #f2f2f2;
   margin-top: .1rem;
+  padding:1%;
 }
 .list:after{
   content: "\0020";

@@ -21,7 +21,7 @@
     <!-- 轮播图 结束 -->
     <!-- 商品信息 开始 -->
     <div class="proinfo">
-      <h3>{{detailsObj.proname}}</h3>
+      <h3>{{detailsObj.prodescribe}}</h3>
       <p class="showprice"><span>￥</span>{{detailsObj.showprice}}</p>
       <div class="sale_info">
         <span class="pull-left">运费：免运费</span>
@@ -37,10 +37,10 @@
           <span slot="body">选择：分类</span>
           <span slot="footer"></span>
         </link-cell>
-        <link-cell link="javascript:void(0);">
+        <!-- <link-cell link="javascript:void(0);">
           <span slot="body">评价：21365</span>
           <span slot="footer"></span>
-        </link-cell>
+        </link-cell> -->
       </cells>
     </div>
     <!-- 挑选及评价信息 结束 -->
@@ -122,10 +122,7 @@
         this.$http.get(this.GLOBAL.serverSrc + "rest/product/"+this.proid,{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
-                      let obj =  response.data.data;
-                      this.$set(this,"detailsObj",obj);
-                      let imgArrString =  obj.imgs;
-                      this.$set(this,"slides",JSON.parse(imgArrString));
+                      this.formatterData(response.data.data);
                     }else{
 
                     }
@@ -133,6 +130,16 @@
                 .catch(function (response) {
                     console.log("获取商品详情-请求错误：", response)
                 });
+      },
+      formatterData(msg){
+        let obj = msg;
+        this.$set(this,"detailsObj",obj);
+        let imgArr =  JSON.parse(obj.imgs);
+        for(let i=0;i<imgArr.length;i++){
+          if(imgArr[i].type===1){
+            this.slides.push(imgArr[i]);
+          }
+        }
       },
       turnTo(link){
         this.$router.push(link);
@@ -254,7 +261,6 @@
     background-color:#ffffff;
   }
   .shop .shop_info>div{
-    border-top:2px solid #F0F7F0;
     line-height:.4rem;
   }
   .shop .shop_info span{

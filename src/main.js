@@ -10,7 +10,7 @@ import VueWeui from 'vue-weui';
 import './assets/css/weui.css'
 import wcSwiper from 'wc-swiper'
 import 'wc-swiper/style.css'
-import '../static/lib/font-awesome-4.7.0/css/font-awesome.css'
+import '../static/css/font-awesome.css';
 
 Vue.config.productionTip = false
 

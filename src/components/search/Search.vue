@@ -81,10 +81,11 @@
     height:.3rem;
     line-height:.3rem;
     margin:0 .1rem .1rem .1rem;
+    padding:0 .06rem;
     color:#999999;
     border: 1px solid #aaaaaa;
     border-radius: 4px;
-    flex-grow:1;
+    /* flex-grow:1; */
   }
 
 </style>

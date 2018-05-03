@@ -1,40 +1,45 @@
-<!-- 首页热门专栏下的商品模块 -->
+<!-- 购买时选择商品规格 -->
 <template>
-  <div class="list_item" v-on:click="lookDetails(hotItem.proid)">
-    <div class="img cover">
-      <img v-bind:src="hotItem.keyfrom" alt="">
-    </div>
-    <h3>{{hotItem.proname}}</h3>
-    <p class="prodescribe">{{hotItem.prodescribe}}</p>
-    <div class="close"><i class="fa fa-times"></i></div>
-    <p class="showprice"><span>￥</span>{{hotItem.showprice}}</p>
-    <p class="showoldprice">￥{{hotItem.showoldprice}}</p>
-    <weui-button type="default" :plain="true" :mini="true">点击购买</weui-button>
+  <div class="spec">
+
   </div>
 </template>
 
 <script>
-import {Button} from 'vue-weui';
+import {Icon} from 'vue-weui';
 
 export default {
-  name: 'HotItem',
+  name: 'specItem',
   props: {
-    hotItem: {
+    specItem: {
       type: Object,
       required: true
     }
   },
   data () {
     return {
+      fieldid:null,
 
     }
   },
   components: {
-    'weui-button': Button
+    Icon
   },
   methods: {
-    lookDetails(proid){
-      this.$router.push({ name: 'Details', params: { key: "byId",value: proid }});
+    addToShopCart(){
+      this.$http.post(this.GLOBAL.serverSrc + "",{
+
+      },{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+
+                  }else{
+
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取商品详情-请求错误：", response)
+              });
     }
   }
 }
@@ -108,10 +113,10 @@ export default {
   font-size: 0.1rem;
   color:#999999;
 }
-.list_item a.weui_btn.weui_btn_mini{
+.shopping_cart{
   float: right;
   line-height: .1rem;
-  font-size: .1rem;
+  font-size: .16rem;
   margin: .14rem 0 0 .02rem;
   padding: .04rem .02rem .02rem .02rem;
   color:#99CC99;

@@ -44,12 +44,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .list_item{
-  width: 47%;
-  margin: 2% 1% 2% 2%;
+  width: 48%;
+  margin: 1%;
   padding: 2%;
   overflow: hidden;
   float: left;
   background-color: #ffffff;
+  border-radius: 6px;
+  border:1px solid #eee;
 }
 .list_item .img{
   width: 100%;
@@ -61,7 +63,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.16rem;
+  font-size: 0.14rem;
   color:#333333;
 }
 .list_item p{
@@ -70,7 +72,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.14rem;
+  font-size: 0.12rem;
   color:#999999;
 }
 .list_item p.prodescribe{
