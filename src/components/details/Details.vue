@@ -1,6 +1,6 @@
 <!-- 商品详情 -->
 <template>
-  <div class="details">
+  <div class="details" v-bind:class="{'noscroll':choosespecBorn===true}">
     <!-- 顶部 开始 -->
     <div class="top">
       <div class="back_home" v-on:click="turnTo('/')">
@@ -33,7 +33,7 @@
     <!-- 挑选及评价信息 开始 -->
     <div class="buy cover_weui">
       <cells type="access">
-        <link-cell link="javascript:void(0);" v-bind:click.native="toChoose()">
+        <link-cell link="javascript:void(0);" v-on:click.native="toChoose">
           <span slot="body">选择：分类</span>
           <span slot="footer"></span>
         </link-cell>
@@ -71,8 +71,8 @@
     </div>
     <!-- 商品详情介绍 结束 -->
     <!-- 弹出选择规格的面板 开始-->
-    <div class="choosespec_container">
-      <ChooseSpec></ChooseSpec>
+    <div class="choosespec_container" v-bind:class="{'show':choosespecBorn===true}">
+      <ChooseSpec v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
     </div>
     <!-- 弹出选择规格的面板 结束-->
   </div>
@@ -97,7 +97,8 @@
           }
         },
         slides:[],
-        detailsObj:{}
+        detailsObj:{},
+        choosespecBorn:false
       }
     },
     components: {
@@ -141,12 +142,19 @@
       formatterData(msg){
         let obj = msg;
         this.$set(this,"detailsObj",obj);
-        let imgArr =  JSON.parse(obj.imgs);
+        let imgArr = JSON.parse(obj.imgs);
         for(let i=0;i<imgArr.length;i++){
           if(imgArr[i].type===1){
             this.slides.push(imgArr[i]);
           }
         }
+      },
+      toChoose(){
+        this.choosespecBorn=true;
+      },
+      close(){
+        this.choosespecBorn=false;
+        console.log(111)
       },
       turnTo(link){
         this.$router.push(link);
@@ -158,7 +166,11 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .details{
+    position: relative;
     background-color:#f2f2f2;
+  }
+  .details.noscroll{
+    position: fixed;
   }
   .top{
     width: 100%;
@@ -288,6 +300,13 @@
     font-size:.14rem;
   }
   .rich_details img{
+    display: block;
+  }
+
+  .choosespec_container{
+    display: none;
+  }
+  .choosespec_container.show{
     display: block;
   }
 

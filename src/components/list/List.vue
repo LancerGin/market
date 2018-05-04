@@ -26,7 +26,8 @@ export default {
       type:"",
       showpage:1, //页码
       pageSize:8, //分页后每次请求的数据量
-      nomore:false,
+      nomore:false, //判断是否最后一页数据
+      requestIsBack:false, //判断发送的请求是否响应
       list :[]
     }
   },
@@ -50,6 +51,7 @@ export default {
       this.getList();
     },
     getList(){
+      this.requestIsBack = false;
       if(this.sKey==="byCutpage"){
         this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
           "page":this.showpage,
@@ -58,6 +60,7 @@ export default {
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
+                      this.requestIsBack = true;
                       this.pushData(response.data.data);
                       this.onScroll();
                     }else{
@@ -85,6 +88,7 @@ export default {
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
+                      this.requestIsBack = true;
                       this.pushData(response.data.data);
                       this.onScroll();
                     }else{
@@ -102,7 +106,7 @@ export default {
       let len = obj.length;
       //返回的数据条数不足 this.pageSize，说明是最后一页了
       if(len<this.pageSize){
-        this.nomore===true;
+        this.nomore=true;
       }
       for(let i=0;i<len;i++){
         this.list.push(obj[i]);
@@ -142,7 +146,9 @@ export default {
     onScroll(){
       let _this = this;
       window.onscroll = function(){
-        _this.addPages();
+        if(_this.requestIsBack){
+          _this.addPages();
+        }
       }
       // window.touchmove = function(){
       //   _this.addPages();
