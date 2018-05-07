@@ -6,7 +6,7 @@
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
           <span slot="body">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
-            <span class="people"></span>收货人：谭帅&nbsp;&nbsp;&nbsp;&nbsp;13088094976<br>
+            <span class="people">收货人：谭帅&nbsp;&nbsp;&nbsp;&nbsp;13088094976</span><br>
             <span class="address">收货地址：四川省成都市新都区二台子保利紫荆</span>
           </span>
           <span slot="footer"></span>
@@ -19,48 +19,56 @@
         <img src="" alt="">
       </div>
       <p>连衣裙套装井口了群套装井口了群套装井口了群套装</p>
-      <p>规格：红色 m</p>
-      <p><span>￥</span>50.00</p>
+      <p class="spec">规格：红色 m</p>
+      <p><span class="rmb">￥</span>160.00</p>
       <div class="count">x3</div>
     </div>
     <cells>
       <cell>
         <span slot="body">配送方式</span>
-        <span slot="footer">普通快递：+￥10.00</span>
+        <span slot="footer">普通快递：+<span class="rmb">￥</span>10.00</span>
       </cell>
-    </cells>
-    <cells type="form">
-      <input-cell type="text" label="买家留言：" placeholder="给商家留言" :value.sync="remark"></input-cell>
-    </cells>
-    <div class="remark">
-      买家留言：
-      <input type="text" name="remark" placeholder="给商家留言" v-model="remark" class="weui_input">
-    </div>
-    <cells>
+      <div class="weui_cell remark">
+        <div class="weui_cell_bd weui_cell_primary"><slot><span>买家留言：</span></slot></div>
+        <div class="weui_cell_ft"><slot>
+          <input type="text" name="remark" placeholder="给商家留言" v-model="remark" class="weui_input">
+        </slot></div>
+      </div>
       <cell>
         <span slot="body">合计</span>
-        <span slot="footer">￥160.00</span>
+        <span slot="footer"><span class="rmb">￥</span>160.00</span>
       </cell>
     </cells>
     <div class="coupon">
       <cells type="access">
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
-          <span slot="body">优惠码<span class="coupon_num">023654211555455</span></span>
-          <span slot="footer"></span>
+          <span slot="body">优惠码</span>
+          <span slot="footer"><span class="coupon_num">023654211555455</span></span>
         </link-cell>
       </cells>
     </div>
     <cells type="form">
-      <switch-cell name="switch" label="短信通知收件人" :on.sync="switchOn"></switch-cell>
+      <div class="weui_cell weui_cell_switch">
+        <div class="weui_cell_bd weui_cell_primary"><slot>短信通知收件人</slot></div>
+        <div class="weui_cell_ft"><slot>
+          <input type="checkbox" id="id" name="switch" class="weui_switch" v-model="switchOn">
+        </slot></div>
+      </div>
     </cells>
     <div class="info">
-      <span>商品金额</span><span>￥150</span>
-      <span>运费</span><span>+￥10</span>
-      <span>优惠码</span><span>-￥10</span>
+      <div>
+        <span class="lf">商品金额</span><span><span class="rmb">￥</span>160</span>
+      </div>
+      <div>
+        <span class="lf">运费</span><span>+<span class="rmb">￥</span>20</span>
+      </div>
+      <div>
+        <span class="lf">优惠码</span><span>-<span class="rmb">￥</span>10</span>
+      </div>
     </div>
     <div class="submit">
       <div class="btn">提交订单</div>
-      <div class="total_final">合计: <span>160.00</span></div>
+      <div class="total_final">合计: <span><span class="rmb">￥</span>170.00</span></div>
     </div>
   </div>
 </template>
@@ -104,52 +112,134 @@
 <style scoped>
   .make_order{
     text-align: left;
-    font-size:.14rem;
+    font-size:.13rem;
+    color:#000;
   }
+  .weui_cells{
+    margin-top:0;
+    font-size:.13rem;
+  }
+  .weui_cell_primary span{
+    color:#000;
+  }
+  span.rmb{
+    font-size: .11rem;
+  }
+
   .receiving{
     width:100%;
-    height:.8rem;
     position: relative;
   }
+  .receiving .weui_cells{
+    padding: .1rem 0;
+    background-color: #f2f2f2;
+  }
   .receiving .people{
+    font-size:.13rem;
+    color:#000;
     padding-left: .2rem;
+    margin-bottom: .06rem;
   }
   .receiving .address{
-    font-size:.12rem;
+    color:#999999;
+    font-size:.11rem;
     padding-left: .2rem;
   }
   .receiving .fa-map-marker{
     position: absolute;
-    top: .2rem;
+    top: 24px;
     left: .1rem;
     font-size:.2rem;
+    color:#646464;
   }
 
   .title{
-    font-size: .14rem;
+    font-size: .13rem;
+    font-weight: normal;
+    line-height: .48rem;
     padding-left: .1rem;
+    color:#000000;
+    background-color: #ffffff;
   }
   .title .fa{
+    color:#646464;
     margin-right: .06rem;
+  }
+
+  .product{
+    padding: .1rem;
+    position: relative;
+  }
+  .product .img{
+    position: absolute;
+    width:.9rem;
+    height:.9rem;
+    background-color: #cccccc;
+  }
+  .product p{
+    display: block;
+    padding-left: 1rem;
+    font-size: .12rem;
+    margin-bottom: .06rem;
+    color:#000000;
+  }
+  .product p.spec{
+    color:#999999;
+  }
+  .product .count{
+    position: absolute;
+    right: .16rem;
+    bottom: .1rem;
+  }
+
+  .coupon .weui_cells{
+    margin-top:.1rem;
+    margin-bottom: .1rem;
+  }
+  .remark .weui_input{
+    font-size: .12rem;
+  }
+  .remark .weui_cell_ft{
+    flex-grow: 1;
+  }
+
+  .info{
+    background-color: #ffffff;
+    padding: .2rem .1rem;
+    margin-top: .1rem;
+    margin-bottom: .5rem;
+  }
+  .info>div{
+    display: -webkit-flex; /* Safari */
+    display: flex;
+  }
+  .info>div span{
+    color:#000;
+  }
+  .info>div .lf{
+    flex: 1;
   }
 
   .submit{
     width:100%;
-    height:.4rem;
-    line-height:.4rem;
+    height:.5rem;
+    line-height:.5rem;
     position: fixed;
     bottom:0;
     left:0;
     z-index:30;
     background-color:#ffffff;
+    border-top:1px solid #f2f2f2;
     font-size:.16rem;
   }
   .submit div{
     float: right;
   }
   .submit .btn{
-    width:.8rem;
-    background-color:#646464;
+    width:1.2rem;
+    margin-left: .1rem;
+    text-align: center;
+    background-color:#99CC99;
     color:#ffffff;
   }
   .submit .total_final{
