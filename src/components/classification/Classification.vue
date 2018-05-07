@@ -3,49 +3,19 @@
   <div class="classification">
     <!-- 左边分类导航栏 -->
     <div class="navs">
-      <div v-for="(item, key) in navs" :key="key" class="nav" v-bind:class="{'active':selected===key}" v-on:click="lookChild(key,item.ptid)">{{item.ptname}}</div>
+      <div v-for="(item, key) in navs" :key="key" class="nav" v-bind:class="{'active':selected===key}" v-on:click="lookChild(key,item.url,item.typeChildList)">{{item.ptname}}</div>
     </div>
     <!-- 右侧子类模块 -->
     <div class="container">
       <div class="top img">
-        <img src="../../../static/img/1.png" alt="">
+        <img v-bind:src="img" alt="">
       </div>
       <div class="childs">
-        <div class="child">
+        <div class="child" v-for="(item, key) in typeChildList" :key="key" v-on:click="lookList('byTypechild',item.tcid)">
           <div class="img">
-            <img src="../../../static/img/1.png" alt="">
+            <img v-bind:src="item.url" alt="">
           </div>
-          <h4>裤子</h4>
-        </div>
-        <div class="child">
-          <div class="img">
-            <img src="../../../static/img/1.png" alt="">
-          </div>
-          <h4>裤子</h4>
-        </div>
-        <div class="child">
-          <div class="img">
-            <img src="../../../static/img/1.png" alt="">
-          </div>
-          <h4>裤子</h4>
-        </div>
-        <div class="child">
-          <div class="img">
-            <img src="../../../static/img/1.png" alt="">
-          </div>
-          <h4>裤子</h4>
-        </div>
-        <div class="child">
-          <div class="img">
-            <img src="../../../static/img/1.png" alt="">
-          </div>
-          <h4>裤子</h4>
-        </div>
-        <div class="child">
-          <div class="img">
-            <img src="../../../static/img/1.png" alt="">
-          </div>
-          <h4>裤子</h4>
+          <h4>{{item.tcname}}</h4>
         </div>
       </div>
     </div>
@@ -75,20 +45,21 @@
       return {
         navs:[],
         selected:0,
-        typeChild:[]
+        img:'',
+        typeChildList:[]
       }
     },
     mounted (){
-      this.getIndexInfo();
+      this.getProductType();
     },
     methods: {
-      getIndexInfo(){
-        this.$http.get(this.GLOBAL.serverSrc + "rest/index/search",{credentials: false})
+      getProductType(){
+        this.$http.get(this.GLOBAL.serverSrc + "rest/producttype/search",{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
                       let obj =  response.data.data;
-                      let hotWords = obj.type;
-                      this.$set(this,"navs",hotWords);
+                      this.$set(this,"navs",obj);
+                      this.lookChild(0,obj[0].url,obj[0].typeChildList);
                     }else{
 
                     }
@@ -97,8 +68,13 @@
                     console.log("获取首页信息-请求错误：", response)
                 });
       },
-      lookChild(key,value){
+      lookChild(key,imgUrl,typeChildList){
         this.selected=key;
+        this.img=imgUrl;
+        this.$set(this,"typeChildList",typeChildList);
+      },
+      lookList(key,value){
+        this.$router.push({ name: 'List', params: { key: key,value: value}});
       },
       turnTo(link){
         this.$router.push(link);

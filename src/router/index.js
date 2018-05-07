@@ -5,6 +5,7 @@ import Classification from '@/components/classification/Classification'
 import Search from '@/components/search/Search'
 import List from '@/components/list/List'
 import Details from '@/components/details/Details'
+import MakeOrder from '@/components/order/MakeOrder'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/details',
       name: 'Details',
       component: Details
+    },
+    {
+      path: '/makeorder',
+      name: 'MakeOrder',
+      component: MakeOrder
     }
   ]
 })

@@ -98,7 +98,7 @@
         },
         slides:[],
         detailsObj:{},
-        choosespecBorn:false
+        choosespecBorn:false  //判断选择规格面板是否弹出
       }
     },
     components: {
@@ -154,7 +154,6 @@
       },
       close(){
         this.choosespecBorn=false;
-        console.log(111)
       },
       turnTo(link){
         this.$router.push(link);
