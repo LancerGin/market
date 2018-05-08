@@ -1,21 +1,29 @@
 <!-- 商品列表下的商品模块 -->
 <template>
-  <div class="list_item">
-    <div v-on:click="lookDetails(listItem.proid)">
-      <div class="img cover">
-        <img v-bind:src="listItem.keyfrom" alt="">
+  <div>
+    <div class="list_item">
+      <div v-on:click="lookDetails(listItem.proid)">
+        <div class="img cover">
+          <img v-bind:src="listItem.keyfrom" alt="">
+        </div>
+        <h3>{{listItem.proname}}</h3>
+        <p>{{listItem.prodescribe}}</p>
       </div>
-      <h3>{{listItem.proname}}</h3>
-      <p>{{listItem.prodescribe}}</p>
+      <p class="showprice"><span>￥</span>{{listItem.showprice}}</p>
+      <p v-if="listItem.showoldprice" class="showoldprice">￥{{listItem.showoldprice}}</p>
+      <div class="shopping_cart" v-on:click="toChoosespec(listItem.proid)"><i class="fa fa-shopping-cart"></i></div>
     </div>
-    <p class="showprice"><span>￥</span>{{listItem.showprice}}</p>
-    <p v-if="listItem.showoldprice" class="showoldprice">￥{{listItem.showoldprice}}</p>
-    <div class="shopping_cart"><i class="fa fa-shopping-cart"></i></div>
+    <!-- 弹出选择规格的面板 开始-->
+    <div class="choosespec_container" v-bind:class="{'show':choosespecBorn===true}">
+      <ChooseSpec v-if="detailsObj.proid" v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
+    </div>
+    <!-- 弹出选择规格的面板 结束-->
   </div>
 </template>
 
 <script>
 import {Button} from 'vue-weui';
+import ChooseSpec from '@/components/common/ChooseSpec.vue';
 
 export default {
   name: 'ListItem',
@@ -27,15 +35,37 @@ export default {
   },
   data () {
     return {
-
+      detailsObj:{},   //点击购物车按钮弹出选择规格面板，需要获取详情
+      choosespecBorn:false   //判断选择规格面板是否弹出
     }
   },
   components: {
-    'weui-button': Button
+    'weui-button': Button,
+    ChooseSpec
   },
   methods: {
     lookDetails(proid){
       this.$router.push({ name: 'Details', params: { key: "byId",value: proid }});
+    },
+    toChoosespec(proid){
+      this.choosespecBorn=true;
+      this.getDetails(proid);
+    },
+    getDetails(proid){
+      this.$http.get(this.GLOBAL.serverSrc + "rest/product/"+proid,{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                    this.$set(this,"detailsObj",response.data.data);
+                  }else{
+
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取商品详情-请求错误：", response)
+              });
+    },
+    close(){
+      this.choosespecBorn=false;
     }
   }
 }
@@ -119,4 +149,11 @@ export default {
   border-color: #99CC99;
 }
 
+
+.choosespec_container{
+  display: none;
+}
+.choosespec_container.show{
+  display: block;
+}
 </style>

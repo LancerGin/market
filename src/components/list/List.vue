@@ -5,7 +5,7 @@
       <list-item v-for="(item, key) in list" :key="key" v-bind:listItem="item" />
       <div v-if="list.length===0" class="nodata">没有找到相关商品QAQ</div>
     </div>
-    <div v-if="nomore" class="nomore">
+    <div v-if="list.length!=0&&nomore" class="nomore">
       <span>没有更多啦~</span>
     </div>
   </div>
@@ -13,159 +13,159 @@
 
 <script>
 
-import ListItem from '@/components/common/ListItem.vue';
+  import ListItem from '@/components/common/ListItem.vue';
 
-export default {
-  name: 'List',
-  data () {
-    return {
-      sValue:"", //查询列表的条件值
-      sKey:"",   //查询列表的方式
-      keywords:"",
-      typechild:"",
-      type:"",
-      showpage:1, //页码
-      pageSize:8, //分页后每次请求的数据量
-      nomore:false, //判断是否最后一页数据
-      requestIsBack:false, //判断发送的请求是否响应
-      list :[]
-    }
-  },
-  mounted(){
-    this.getParams();
-  },
-  components: {
-    'list-item': ListItem
-  },
-  methods: {
-    getParams(){
-      let params = {};
-      if(this.$route.params.value){
-        sessionStorage.setItem('list_params',JSON.stringify(this.$route.params));
-        params = this.$route.params;
-      }else{
-        params = JSON.parse(sessionStorage.getItem('list_params'));
+  export default {
+    name: 'List',
+    data () {
+      return {
+        sValue:"", //查询列表的条件值
+        sKey:"",   //查询列表的方式
+        keywords:"",
+        typechild:"",
+        type:"",
+        showpage:1, //页码
+        pageSize:8, //分页后每次请求的数据量
+        nomore:false, //判断是否最后一页数据
+        requestIsBack:false, //判断发送的请求是否响应
+        list :[]
       }
-      this.$set(this,"sValue",params.value);
-      this.$set(this,"sKey",params.key);
-      this.getList();
     },
-    getList(){
-      this.requestIsBack = false;
-      if(this.sKey==="byCutpage"){
-        this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
-          "page":this.showpage,
-        	"size":this.pageSize,
-        	"typeid":this.sValue
-        },{credentials: false})
-                  .then(function (response) {
-                    if(response.data.code==="0000"){
-                      this.requestIsBack = true;
-                      this.pushData(response.data.data);
-                      this.onScroll();
-                    }else{
-
-                    }
-                  })
-                .catch(function (response) {
-                    console.log("获取商品列表-请求错误：", response)
-                });
-      }else{
-        if(this.sKey==="byKeywords"){
-          this.keywords = this.sValue;
-        }else if(this.sKey==="byTypechild"){
-          this.typechild = this.sValue;
-        }else if(this.sKey==="byType"){
-          this.type = this.sValue;
+    mounted(){
+      this.getParams();
+    },
+    components: {
+      'list-item': ListItem
+    },
+    methods: {
+      getParams(){
+        let params = {};
+        if(this.$route.params.value){
+          sessionStorage.setItem('list_params',JSON.stringify(this.$route.params));
+          params = this.$route.params;
+        }else{
+          params = JSON.parse(sessionStorage.getItem('list_params'));
         }
-        this.$http.post(this.GLOBAL.serverSrc + "rest/product/search",{
-          "page":this.showpage,
-        	"size":this.pageSize,
-        	"status":1,
-        	"keywords":this.keywords,
-        	"typechild":this.typechild,
-        	"type":this.type
-        },{credentials: false})
-                  .then(function (response) {
-                    if(response.data.code==="0000"){
-                      this.requestIsBack = true;
-                      this.pushData(response.data.data);
-                      this.onScroll();
-                    }else{
+        this.$set(this,"sValue",params.value);
+        this.$set(this,"sKey",params.key);
+        this.getList();
+      },
+      getList(){
+        this.requestIsBack = false;
+        if(this.sKey==="byCutpage"){
+          this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
+            "page":this.showpage,
+          	"size":this.pageSize,
+          	"typeid":this.sValue
+          },{credentials: false})
+                    .then(function (response) {
+                      if(response.data.code==="0000"){
+                        this.requestIsBack = true;
+                        this.pushData(response.data.data);
+                        this.onScroll();
+                      }else{
 
-                    }
-                  })
-                .catch(function (response) {
-                    console.log("获取商品列表-请求错误：", response)
-                });
-      }
+                      }
+                    })
+                  .catch(function (response) {
+                      console.log("获取商品列表-请求错误：", response)
+                  });
+        }else{
+          if(this.sKey==="byKeywords"){
+            this.keywords = this.sValue;
+          }else if(this.sKey==="byTypechild"){
+            this.typechild = this.sValue;
+          }else if(this.sKey==="byType"){
+            this.type = this.sValue;
+          }
+          this.$http.post(this.GLOBAL.serverSrc + "rest/product/search",{
+            "page":this.showpage,
+          	"size":this.pageSize,
+          	"status":1,
+          	"keywords":this.keywords,
+          	"typechild":this.typechild,
+          	"type":this.type
+          },{credentials: false})
+                    .then(function (response) {
+                      if(response.data.code==="0000"){
+                        this.requestIsBack = true;
+                        this.pushData(response.data.data);
+                        this.onScroll();
+                      }else{
 
-    },
-    pushData(msg){
-      let obj = msg;
-      let len = obj.length;
-      //返回的数据条数不足 this.pageSize，说明是最后一页了
-      if(len<this.pageSize){
-        this.nomore=true;
-      }
-      for(let i=0;i<len;i++){
-        this.list.push(obj[i]);
-      }
-    },
-    getScrollTop(){
-      let scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
-      if(document.body){
-        bodyScrollTop = document.body.scrollTop;
-      }
-      if(document.documentElement){
-        documentScrollTop = document.documentElement.scrollTop;
-      }
-        scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
-        return scrollTop;
-    },
-    getScrollHeight(){
-      let scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
-  　　if(document.body){
-  　　　　bodyScrollHeight = document.body.scrollHeight;
-  　　}
-  　　if(document.documentElement){
-  　　　　documentScrollHeight = document.documentElement.scrollHeight;
-  　　}
-  　　scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
-  　　return scrollHeight;
-    },
-    getWindowHeight(){
-    　　let windowHeight = 0;
-    　　if(document.compatMode == "CSS1Compat"){
-    　　　　windowHeight = document.documentElement.clientHeight;
-    　　}else{
-    　　　　windowHeight = document.body.clientHeight;
+                      }
+                    })
+                  .catch(function (response) {
+                      console.log("获取商品列表-请求错误：", response)
+                  });
+        }
+
+      },
+      pushData(msg){
+        let obj = msg;
+        let len = obj.length;
+        //返回的数据条数不足 this.pageSize，说明是最后一页了
+        if(len<this.pageSize){
+          this.nomore=true;
+        }
+        for(let i=0;i<len;i++){
+          this.list.push(obj[i]);
+        }
+      },
+      getScrollTop(){
+        let scrollTop = 0, bodyScrollTop = 0, documentScrollTop = 0;
+        if(document.body){
+          bodyScrollTop = document.body.scrollTop;
+        }
+        if(document.documentElement){
+          documentScrollTop = document.documentElement.scrollTop;
+        }
+          scrollTop = (bodyScrollTop - documentScrollTop > 0) ? bodyScrollTop : documentScrollTop;
+          return scrollTop;
+      },
+      getScrollHeight(){
+        let scrollHeight = 0, bodyScrollHeight = 0, documentScrollHeight = 0;
+        if(document.body){
+    　　　　bodyScrollHeight = document.body.scrollHeight;
     　　}
-    　　return windowHeight;
-    },
-    onScroll(){
-      let _this = this;
-      window.onscroll = function(){
-        if(_this.requestIsBack){
-          _this.addPages();
+    　　if(document.documentElement){
+    　　　　documentScrollHeight = document.documentElement.scrollHeight;
+    　　}
+    　　scrollHeight = (bodyScrollHeight - documentScrollHeight > 0) ? bodyScrollHeight : documentScrollHeight;
+    　　return scrollHeight;
+      },
+      getWindowHeight(){
+      　　let windowHeight = 0;
+      　　if(document.compatMode == "CSS1Compat"){
+      　　　　windowHeight = document.documentElement.clientHeight;
+      　　}else{
+      　　　　windowHeight = document.body.clientHeight;
+      　　}
+      　　return windowHeight;
+      },
+      onScroll(){
+        let _this = this;
+        window.onscroll = function(){
+          if(_this.requestIsBack){
+            _this.addPages();
+          }
         }
+        // window.touchmove = function(){
+        //   _this.addPages();
+        //
+        // }
+      },
+      addPages(){
+        let _this = this;
+        //下一页还有内容并且
+        //滚动到页面的 0.7倍高度的时候请求下一页的数据
+    　　if(this.nomore===false&&_this.getScrollTop() + _this.getWindowHeight() >= 0.7*(_this.getScrollHeight())){
+    　　　　 _this.showpage++;
+            _this.getList();
+    　　}
       }
-      // window.touchmove = function(){
-      //   _this.addPages();
-      //
-      // }
-    },
-    addPages(){
-      let _this = this;
-      //下一页还有内容并且
-      //滚动到页面的 0.7倍高度的时候请求下一页的数据
-  　　if(this.nomore===false&&_this.getScrollTop() + _this.getWindowHeight() >= 0.7*(_this.getScrollHeight())){
-  　　　　 _this.showpage++;
-          _this.getList();
-  　　}
     }
   }
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -190,4 +190,5 @@ export default {
   font-size:.12rem;
   padding: .1rem 0;
 }
+
 </style>

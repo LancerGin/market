@@ -59,7 +59,9 @@ export default {
   },
   methods: {
     getUserInfo(){
-      this.$http.get(this.GLOBAL.serverSrc + "rest/user/login",{credentials: false})
+      const code = location.href.split("?code=")[1];
+      const oldToken = sessionStorage.getItem('STORAGE_TOKEN')||'';
+      this.$http.get(this.GLOBAL.serverSrc + "rest/user/login" +"?code="+code+"&token="+oldToken,{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
                     let obj =  response.data.data;
