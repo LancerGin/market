@@ -6,6 +6,7 @@ import Search from '@/components/search/Search'
 import List from '@/components/list/List'
 import Details from '@/components/details/Details'
 import MakeOrder from '@/components/order/MakeOrder'
+import NewAddress from '@/components/common/NewAddress'
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
       path: '/makeorder',
       name: 'MakeOrder',
       component: MakeOrder
+    },
+    {
+      path: '/newaddress',
+      name: 'NewAddress',
+      component: NewAddress
     }
   ]
 })

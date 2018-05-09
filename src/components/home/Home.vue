@@ -59,13 +59,13 @@ export default {
   },
   methods: {
     getUserInfo(){
-      const code = location.href.split("?code=")[1];
+      const code = location.href.split("?code=")[1]||'';
       const oldToken = sessionStorage.getItem('STORAGE_TOKEN')||'';
       this.$http.get(this.GLOBAL.serverSrc + "rest/user/login" +"?code="+code+"&token="+oldToken,{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
                     let obj =  response.data.data;
-                    // sessionStorage.setItem('STORAGE_TOKEN',obj);
+                    sessionStorage.setItem('STORAGE_TOKEN',obj.token);
                   }else{
 
                   }

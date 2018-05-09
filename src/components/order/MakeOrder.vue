@@ -70,28 +70,39 @@
       <div class="btn">提交订单</div>
       <div class="total_final">合计: <span><span class="rmb">￥</span>170.00</span></div>
     </div>
+
+    <!-- 弹出选择收货地址的面板 开始-->
+    <div class="chooseAddress_container" v-bind:class="{'show':chooseAddressBorn===true}">
+      <ChooseAddress v-on:close-pannel="close"></ChooseAddress>
+    </div>
+    <!-- 弹出选择收货地址的面板 结束-->
   </div>
 </template>
 
 <script>
   import {CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
+  import ChooseAddress from '@/components/order/ChooseAddress.vue';
 
   export default {
     name: 'MakeOrder',
     data () {
       return {
-        orderObj:{}
+        orderObj:{},
+        remark:"",
+        switchOn:false,
+        chooseAddressBorn:false
       }
     },
-    mounted(){
-      // this.getParams();
+    created(){
+      this.getParams();
     },
     components: {
       CellsTitle,
       CellsTips,
       Cells,
       Cell,
-      LinkCell
+      LinkCell,
+      ChooseAddress
     },
     methods: {
       getParams(){
@@ -103,6 +114,12 @@
           params = JSON.parse(sessionStorage.getItem('order_params'));
         }
         this.$set(this,"orderObj",params.value);
+      },
+      chooseAddress(){
+        this.chooseAddressBorn=true;
+      },
+      close(){
+        this.chooseAddressBorn=false;
       }
     }
   }
@@ -227,7 +244,7 @@
     position: fixed;
     bottom:0;
     left:0;
-    z-index:30;
+    z-index:3;
     background-color:#ffffff;
     border-top:1px solid #f2f2f2;
     font-size:.16rem;
@@ -247,6 +264,13 @@
   }
   .submit .total_final span{
     color:#99CC99;
+  }
+
+  .chooseAddress_container{
+    display: none;
+  }
+  .chooseAddress_container.show{
+    display: block;
   }
 
 </style>

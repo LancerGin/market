@@ -39,7 +39,7 @@
       </div>
       <div class="btns">
         <div class="add_to_shopcart btn">加入购物车</div>
-        <div class="btn">立即购买</div>
+        <div class="btn" v-on:click="buyNow">立即购买</div>
       </div>
     </div>
   </div>
@@ -141,6 +141,22 @@ export default {
               .catch(function (response) {
                   console.log("添加到购物车-请求错误：", response)
               });
+    },
+    buyNow(){
+      // this.$http.post(this.GLOBAL.serverSrc + "",{
+      //
+      // },{credentials: false})
+      //           .then(function (response) {
+      //             if(response.data.code==="0000"){
+      //
+      //             }else{
+      //
+      //             }
+      //           })
+      //         .catch(function (response) {
+      //             console.log("立即购买-请求错误：", response)
+      //         });
+      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: this.fieldItems}});
     },
     cancel(){
       this.$emit('close-pannel');
