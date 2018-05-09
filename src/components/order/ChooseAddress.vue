@@ -46,11 +46,18 @@
         </cells>
       </div>
     </div>
+
+    <!-- 弹出新建收货地址的面板 开始-->
+    <div class="newAddress_container" v-bind:class="{'show':newAddressBorn===true}">
+      <NewAddress v-on:close-pannel="closeNewAddress" v-on:confirm="confirmNewAddress"></NewAddress>
+    </div>
+    <!-- 弹出新建收货地址的面板 结束-->
   </div>
 </template>
 
 <script>
 import {Icon,CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
+import NewAddress from '@/components/common/NewAddress.vue';
 
 export default {
   name: 'ChooseAddress',
@@ -59,6 +66,7 @@ export default {
   },
   data () {
     return {
+      newAddressBorn:false,
       picked:""
     }
   },
@@ -71,18 +79,26 @@ export default {
     CellsTips,
     Cells,
     Cell,
-    LinkCell
+    LinkCell,
+    NewAddress
   },
   methods: {
     renderField(){
 
     },
     newAddress(){
-      this.$router.push({ name: 'NewAddress', params: { key: "fromOrderPage"}});
+      this.newAddressBorn=true;
+      // this.$router.push({ name: 'NewAddress', params: { key: "fromOrderPage"}});
+    },
+    confirmNewAddress(msg){
+      alert(msg)
+      this.newAddressBorn=false;
+    },
+    closeNewAddress(){
+      this.newAddressBorn=false;
     },
     cancel(){
       this.$emit('close-pannel');
-
     }
   }
 }
@@ -162,6 +178,13 @@ export default {
   .pan .body .new i.fa{
     color:#0078CE;
     margin-right:.1rem;
+  }
+
+  .newAddress_container{
+    display: none;
+  }
+  .newAddress_container.show{
+    display: block;
   }
 
 </style>

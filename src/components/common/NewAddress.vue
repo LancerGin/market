@@ -10,14 +10,58 @@
         </div>
       </div>
       <div class="body">
-        <cells type="form">
+        <cells type="split">
           <div class="weui_cell">
             <div class="weui_cell_bd weui_cell_primary"><slot>收货人</slot></div>
             <div class="weui_cell_ft"><slot>
               <input type="text" name="people" placeholder="名字" v-model="people" class="weui_input">
             </slot></div>
           </div>
+          <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary"><slot>联系电话</slot></div>
+            <div class="weui_cell_ft"><slot>
+              <input type="text" name="phone" placeholder="手机或固定电话" v-model="phone" class="weui_input">
+            </slot></div>
+          </div>
+          <div class="weui_cell weui_cell_select">
+            <div class="weui_cell_bd weui_cell_primary"><slot>选择地区</slot></div>
+            <div class="weui_cell_ft select"><slot>
+              <div class="province">
+                <select class="weui_select" v-model="province" v-on:change="setCity()">
+                  <option value="">选择省份</option>
+                  <option v-for="(p,index) in provinceArr" v-bind:value="p.name" v-bind:selected="index===0">{{p.name}}</option>
+                </select>
+              </div>
+              <div class="city">
+                <select class="weui_select" v-model="city" v-on:change="setArea()">
+                  <option value="">选择城市</option>
+                  <option v-for="(c,index) in cityArr" v-bind:value="c.name" v-bind:selected="index===0">{{c.name}}</option>
+                </select>
+              </div>
+              <div class="area">
+                <select class="weui_select" v-model="area">
+                  <option value="">选择地区</option>
+                  <option v-for="(a,index) in areaArr" v-bind:value="a.name" v-bind:selected="index===0">{{a.name}}</option>
+                </select>
+              </div>
+            </slot></div>
+          </div>
+          <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary"><slot>详细地址</slot></div>
+            <div class="weui_cell_ft"><slot>
+              <input type="text" name="address" placeholder="如街道、楼层等" v-model="address" class="weui_input">
+            </slot></div>
+          </div>
+          <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary"><slot>邮政编码</slot></div>
+            <div class="weui_cell_ft"><slot>
+              <input type="text" name="postalcode" placeholder="选填" v-model="postalcode" class="weui_input">
+            </slot></div>
+          </div>
         </cells>
+      </div>
+      <div class="submit">
+        <div class="btn" v-on:click="save">保存</div>
       </div>
     </div>
   </div>
@@ -33,7 +77,16 @@ export default {
   },
   data () {
     return {
-      picked:""
+      people:"",
+      phone:"",
+      province:"",
+      provinceArr:[],
+      city:"",
+      cityArr:[],
+      area:"",
+      areaArr:[],
+      address:"",
+      postalcode:""
     }
   },
   mounted(){
@@ -49,11 +102,39 @@ export default {
   },
   methods: {
     renderField(){
-
+      this.$http.get('../../../static/china.json')
+                .then(function (response) {
+                    let arr =  response.data;
+                    this.$set(this,'provinceArr',arr);
+                })
+              .catch(function (response) {
+                  console.log("获取用户信息-请求错误：", response)
+              });
+    },
+    setCity(){
+      let province = this.province;
+      let provinceArr = this.provinceArr;
+      for(let i=0;i<provinceArr.length;i++){
+        if(provinceArr[i].name===province){
+          this.$set(this,'cityArr',provinceArr[i].sub);
+          this.$set(this,'areaArr',[]);
+        }
+      }
+    },
+    setArea(){
+      let city = this.city;
+      let cityArr = this.cityArr;
+      for(let i=0;i<cityArr.length;i++){
+        if(cityArr[i].name===city){
+          this.$set(this,'areaArr',cityArr[i].sub||cityArr);
+        }
+      }
+    },
+    save(){
+      this.$emit('confirm','添加收货地址成功！');
     },
     cancel(){
       this.$emit('close-pannel');
-
     }
   }
 }
@@ -65,9 +146,10 @@ export default {
     position: fixed;
     top:0;
     left:0;
-    z-index: 20;
+    z-index: 60;
     width:100%;
     height:120%;
+    text-align: left;
   }
   .new_address .weui_input{
     font-size: .14rem;
@@ -78,7 +160,7 @@ export default {
   .zz{
     width:100%;
     height:120%;
-    background-color: rgba(0,0,0,0.9);
+    background-color: rgba(0,0,0,1);
   }
   .pan{
     width:100%;
@@ -86,7 +168,7 @@ export default {
     position: fixed;
     bottom:0;
     left:0;
-    z-index: 30;
+    z-index: 70;
     font-size: .16rem;
     animation: DWONTOUP .4s;
   }
@@ -109,7 +191,7 @@ export default {
     position: absolute;
     top:.06rem;
     right:.1rem;
-    z-index: 40;
+    z-index: 80;
   }
 
   .pan .body{
@@ -121,6 +203,57 @@ export default {
   .pan .body .weui_cell_ft{
     min-width:.3rem;
   }
+  .pan .body .weui_cells .weui_cell{
+    height:.48rem;
+  }
+  .pan .body .weui_cells .weui_cell_primary{
+    font-size: 0.13rem;
+    color:#646464;
+  }
+  .pan .body .weui_cells .weui_cell_ft input{
+    font-size: 0.13rem;
+    color:#000;
+  }
+  .pan .body .weui_cells .weui_cell_ft input::-webkit-input-placeholder{
+    font-size: 0.12rem;
+    color:#ccc;
+  }
 
+  .pan .body .weui_cells .weui_cell_select{
+    padding:10px 15px;
+  }
+  .pan .body .weui_cells .weui_cell_select .weui_cell_primary{
+    flex-grow: 2;
+  }
+  .pan .body .weui_cells .weui_cell_select .weui_cell_ft.select{
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    justify-content: center;
+  }
+  .pan .body .weui_cells .weui_cell_select .weui_cell_ft.select div{
+    flex-grow: 1;
+  }
+  .pan .body .weui_cells .weui_cell_select .weui_cell_ft.select select{
+    text-align: center;
+    font-size: .12rem;
+    padding-right:10px;
+    padding-left:10px;
+  }
+
+  .submit{
+    width:100%;
+    height:.9rem;
+    line-height:.5rem;
+    padding:.2rem .1rem;
+    background-color:#ffffff;
+    border-top:1px solid #f2f2f2;
+    font-size:.16rem;
+  }
+  .submit .btn{
+    margin: auto;
+    text-align: center;
+    background-color:#99CC99;
+    color:#ffffff;
+  }
 
 </style>
