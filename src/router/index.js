@@ -7,6 +7,7 @@ import List from '@/components/list/List'
 import Details from '@/components/details/Details'
 import MakeOrder from '@/components/order/MakeOrder'
 import NewAddress from '@/components/common/NewAddress'
+import ShopCart from '@/components/shopcart/ShopCart'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
       path: '/newaddress',
       name: 'NewAddress',
       component: NewAddress
+    },
+    {
+      path: '/shopcart',
+      name: 'ShopCart',
+      component: ShopCart
     }
   ]
 })
