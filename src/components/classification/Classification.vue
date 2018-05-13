@@ -27,7 +27,7 @@
       <div class="classification" v-on:click="turnTo('/classification')">
         <span>商品分类</span>
       </div>
-      <div class="shopping_cart" v-on:click="turnTo('/shoppingcart')">
+      <div class="shopping_cart" v-on:click="turnTo('/shopcart')">
         <span>购物车</span>
       </div>
       <div class="vip" v-on:click="turnTo('/vip')">

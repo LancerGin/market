@@ -75,12 +75,14 @@
       <ChooseSpec v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
     </div>
     <!-- 弹出选择规格的面板 结束-->
+    <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
   import {Button,CellsTitle, CellsTips,
     Cells, Cell, LinkCell,Icon} from 'vue-weui';
+  import { Toast } from 'vux';
   import ChooseSpec from '@/components/common/ChooseSpec.vue';
 
   export default {
@@ -98,7 +100,9 @@
         },
         slides:[],
         detailsObj:{},
-        choosespecBorn:false  //判断选择规格面板是否弹出
+        choosespecBorn:false,  //判断选择规格面板是否弹出
+        showToast:false,
+        toastMsg:""
       }
     },
     components: {
@@ -109,6 +113,7 @@
       Cell,
       LinkCell,
       Icon,
+      Toast,
       ChooseSpec
     },
     mounted (){
@@ -152,8 +157,12 @@
       toChoose(){
         this.choosespecBorn=true;
       },
-      close(){
+      close(msg){
         this.choosespecBorn=false;
+        if(msg){
+          this.toastMsg=msg;
+          this.showToast=true;
+        }
       },
       turnTo(link){
         this.$router.push(link);
@@ -307,6 +316,10 @@
   }
   .choosespec_container.show{
     display: block;
+  }
+
+  .vux-toast{
+    font-size:.14rem;
   }
 
 </style>

@@ -18,11 +18,13 @@
       <ChooseSpec v-if="detailsObj.proid" v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
     </div>
     <!-- 弹出选择规格的面板 结束-->
+    <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
 import {Button} from 'vue-weui';
+import { Toast } from 'vux';
 import ChooseSpec from '@/components/common/ChooseSpec.vue';
 
 export default {
@@ -40,6 +42,7 @@ export default {
     }
   },
   components: {
+    Toast,
     'weui-button': Button,
     ChooseSpec
   },
@@ -64,8 +67,12 @@ export default {
                   console.log("获取商品详情-请求错误：", response)
               });
     },
-    close(){
+    close(msg){
       this.choosespecBorn=false;
+      if(msg){
+        this.toastMsg=msg;
+        this.showToast=true;
+      }
     }
   }
 }
@@ -155,5 +162,9 @@ export default {
 }
 .choosespec_container.show{
   display: block;
+}
+
+.vux-toast{
+  font-size:.14rem;
 }
 </style>

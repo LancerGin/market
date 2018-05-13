@@ -20,9 +20,9 @@
       </div>
       <div class="body">
         <cells type="checkbox">
-          <label v-for="(item,index) in productArr" v-bind:for="item.proid" v-on:click="toggleCheck(item)" class="weui_cell weui_check_label">
+          <label v-for="(item,index) in productArr" v-bind:for="item.shopcartid" v-on:click="toggleCheck(item)" class="weui_cell weui_check_label">
             <div class="weui_cell_hd"><slot>
-              <input type="checkbox" name="item.proid" class="weui_check" id="item.proid" v-bind:value="item.proid" v-bind:checked="item.checked">
+              <input type="checkbox" name="item.shopcartid" class="weui_check" id="item.shopcartid" v-bind:value="item.shopcartid" v-bind:checked="item.checked">
               <span class="weui_icon_checked"></span>
             </slot></div>
             <div class="weui_cell_bd weui_cell_primary"><slot>
@@ -31,9 +31,9 @@
                   <img src="" alt="">
                 </div>
                 <div class="det">
-                  <p class="describe">连衣裙套装井口了群套装井口了群套装井口了群套装</p>
-                  <p class="spec">规格：红色 m</p>
-                  <p><span class="rmb">￥</span>50.00</p>
+                  <p class="describe">{{item.prodescribe}}</p>
+                  <p class="spec">{{item.profield}}</p>
+                  <p><span class="rmb">￥</span>{{item.price}}</p>
                 </div>
                 <div class="count">x{{item.count}}</div>
                 <div class="count_dos">
@@ -57,7 +57,7 @@
             </slot></div>
             <div class="weui_cell_bd weui_cell_primary"><slot>
               <div class="info">
-                <p>合计：<span>160.00</span></p>
+                <p>合计：<span>{{totalprice}}</span></p>
                 <p>含运费：￥10.00</p>
               </div>
             </slot></div>
@@ -82,6 +82,8 @@ export default {
   },
   data () {
     return {
+      page:"1",
+      size:"8",
       canedit:false,
       checkall:'no',
       checkedArr:[],
@@ -101,7 +103,8 @@ export default {
           max:8
         }
       ],
-      totalnum:0
+      totalnum:0,
+      totalprice:"0.00"
     }
   },
   computed:{
@@ -122,7 +125,39 @@ export default {
   },
   methods: {
     renderField(){
-
+      this.$http.get(this.GLOBAL.serverSrc + "rest/shopcar/search"+
+      "?size="+this.size+"&page="+this.page,
+      {credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.formatData(response.data.data);
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("添加到购物车-请求错误：", response)
+              });
+    },
+    formatData(arr){
+      let newArr =[];
+      let totalprice=10;//运费10块钱
+      for(let i=0;i<arr.length;i++){
+        totalprice+=parseFloat(arr[i].price);
+        newArr.push({
+          proid:arr[i].proid,
+          shopcartid:arr[i].shopcarid,
+          profield:arr[i].profield,
+          prodescribe:arr[i].prodescribe,
+          price:arr[i].price,
+          checked:false,
+          count:arr[i].number,
+          min:1,
+          max:arr[i].stock
+        });
+      }
+      this.$set(this,"productArr",newArr);
+      this.$set(this,"totalprice",totalprice);
     },
     checkAll(){
       setTimeout(()=>{
@@ -134,8 +169,8 @@ export default {
             productArr[i]["checked"]=false;
           }
         }
-      },16)
-      this.pushCheckedproid();
+      },6)
+      this.pushCheckedid();
     },
     toggleCheck(item){
       if(item.checked===false){
@@ -156,10 +191,10 @@ export default {
         }else{
           this.checkall="no";
         }
-      },16)
-      this.pushCheckedproid();
+      },6)
+      this.pushCheckedid();
     },
-    pushCheckedproid(){
+    pushCheckedid(){
       setTimeout(()=>{
         this.checkedArr.length=0;
         let productArr = this.productArr;
@@ -169,7 +204,7 @@ export default {
           }
         }
         this.$set(this,"totalnum",this.checkedArr.length);
-      },30)
+      },6)
     },
     edit(){
       this.canedit=true;
@@ -250,6 +285,10 @@ export default {
     color:#000000;
   }
   .product p.spec{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right:.2rem;
     color:#999999;
   }
   .product.change_num p.describe,

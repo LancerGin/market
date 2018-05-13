@@ -27,7 +27,6 @@ a, a:link, a:visited, a:hover, a:active {
 }
 
 p, span, b, input, button, textarea, img {
-  color: #646464;
   border: none;
   outline: none;
   display: inline-block;
@@ -95,8 +94,6 @@ li {
   display: none;
 }
 
-/*layer loading层不居中的问题*/
-
-.layui-layer-loading .layui-layer-content {
-  margin: auto !important;
+.vux-toast{
+  font-size:.14rem;
 }

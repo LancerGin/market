@@ -38,15 +38,17 @@
         </div>
       </div>
       <div class="btns">
-        <div class="add_to_shopcart btn">加入购物车</div>
+        <div class="add_to_shopcart btn" v-on:click="addToShopCart">加入购物车</div>
         <div class="btn" v-on:click="buyNow">立即购买</div>
       </div>
     </div>
+    <toast v-model="showPositionValue" type="text" :time="8000" is-show-mask text="添加成功" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
-import {Icon,Button} from 'vue-weui';
+import {Icon} from 'vue-weui';
+import { Toast } from 'vux'
 
 export default {
   name: 'specItem',
@@ -71,6 +73,7 @@ export default {
       specItems:[],
       specTitle:"规格",
       specSelectedIndex:0,
+      showPositionValue:false
     }
   },
   watch:{
@@ -85,7 +88,7 @@ export default {
   },
   components: {
     Icon,
-    'weui-button': Button
+    Toast
   },
   methods: {
     renderField(){
@@ -128,14 +131,15 @@ export default {
       }
     },
     addToShopCart(){
-      this.$http.post(this.GLOBAL.serverSrc + "",{
-
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/add",{
+        	"fieldid":this.fieldid,
+        	"number":this.count
       },{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
-
+                      this.showToast(response.data.msg);
                   }else{
-
+                      alert(response.data.msg)
                   }
                 })
               .catch(function (response) {
@@ -143,25 +147,28 @@ export default {
               });
     },
     buyNow(){
-      // this.$http.post(this.GLOBAL.serverSrc + "",{
-      //
-      // },{credentials: false})
-      //           .then(function (response) {
-      //             if(response.data.code==="0000"){
-      //
-      //             }else{
-      //
-      //             }
-      //           })
-      //         .catch(function (response) {
-      //             console.log("立即购买-请求错误：", response)
-      //         });
-      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: this.fieldItems}});
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",{
+          "fieldid":[
+            this.fieldid
+          ]
+        },{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: this.fieldItems}});
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("立即购买-请求错误：", response)
+              });
     },
     cancel(){
       this.$emit('close-pannel');
-
-    }
+    },
+    showToast (msg) {
+      this.$emit('close-pannel',msg);
+    },
   }
 }
 </script>
@@ -347,6 +354,10 @@ export default {
   .btns .btn.add_to_shopcart{
     color:#99CC99;
     background-color:#EBF5EB;
+  }
+
+  .vux-toast{
+    font-size:.14rem;
   }
 
 </style>
