@@ -117,7 +117,9 @@ export default {
       for(let i=0;i<provinceArr.length;i++){
         if(provinceArr[i].name===province){
           this.$set(this,'cityArr',provinceArr[i].sub);
+          this.$set(this,"city",provinceArr[i]["sub"][0].name);
           this.$set(this,'areaArr',[]);
+          this.$set(this,"area","请选择");
         }
       }
     },
@@ -127,6 +129,7 @@ export default {
       for(let i=0;i<cityArr.length;i++){
         if(cityArr[i].name===city){
           this.$set(this,'areaArr',cityArr[i].sub||cityArr);
+          this.$set(this,"area",cityArr[i].sub?cityArr[i]["sub"][0].name:cityArr[0].name);
         }
       }
     },
@@ -160,7 +163,7 @@ export default {
   .zz{
     width:100%;
     height:120%;
-    background-color: rgba(0,0,0,1);
+    background-color: rgba(0,0,0,.7);
   }
   .pan{
     width:100%;
@@ -202,6 +205,7 @@ export default {
   }
   .pan .body .weui_cell_ft{
     min-width:.3rem;
+    max-width: 2.6rem;
   }
   .pan .body .weui_cells .weui_cell{
     height:.48rem;

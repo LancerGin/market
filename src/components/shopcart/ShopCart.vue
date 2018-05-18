@@ -20,31 +20,33 @@
       </div>
       <div class="body">
         <cells type="checkbox">
-          <label v-for="(item,index) in productArr" v-bind:for="item.shopcartid" v-on:click="toggleCheck(item)" class="weui_cell weui_check_label">
-            <div class="weui_cell_hd"><slot>
-              <input type="checkbox" name="item.shopcartid" class="weui_check" id="item.shopcartid" v-bind:value="item.shopcartid" v-bind:checked="item.checked">
-              <span class="weui_icon_checked"></span>
-            </slot></div>
-            <div class="weui_cell_bd weui_cell_primary"><slot>
-              <div class="product" v-bind:class="{'change_num':canedit===true}">
-                <div class="img">
-                  <img src="" alt="">
+          <div v-for="(item,index) in productArr" class="cc">
+            <label v-bind:for="item.shopcartid" v-on:click="toggleCheck(item)" class="weui_cell weui_check_label">
+              <div class="weui_cell_hd"><slot>
+                <input type="checkbox" name="item.shopcartid" class="weui_check" id="item.shopcartid" v-bind:value="item.shopcartid" v-bind:checked="item.checked">
+                <span class="weui_icon_checked"></span>
+              </slot></div>
+              <div class="weui_cell_bd weui_cell_primary"><slot>
+                <div class="product" v-bind:class="{'change_num':canedit===true}">
+                  <div class="img">
+                    <img v-bind:src="item.imgurl" alt="">
+                  </div>
+                  <div class="det">
+                    <p class="describe">{{item.prodescribe}}</p>
+                    <p class="spec">{{item.profield}}</p>
+                    <p class="price"><span class="rmb">￥</span>{{item.price}}</p>
+                  </div>
+                  <div class="count">x{{item.count}}</div>
+                  <div class="count_dos">
+                    <div class="reduce" v-bind:class="{'not_allowed':item.min===item.count}" v-on:click.stop.prevent="reduceCount(item)">-</div>
+                    <input type="number" name="count" v-model="item.count">
+                    <div class="add" v-bind:class="{'not_allowed':item.max===item.count}" v-on:click.stop.prevent="addCount(item)">+</div>
+                  </div>
+                  <div class="delete_btn" v-on:click.stop.prevent="removepro(item.shopcartid,index)">删除</div>
                 </div>
-                <div class="det">
-                  <p class="describe">{{item.prodescribe}}</p>
-                  <p class="spec">{{item.profield}}</p>
-                  <p><span class="rmb">￥</span>{{item.price}}</p>
-                </div>
-                <div class="count">x{{item.count}}</div>
-                <div class="count_dos">
-                  <div class="reduce" v-bind:class="{'not_allowed':item.min===item.count}" v-on:click.stop.prevent="reduceCount(item)">-</div>
-                  <input type="number" name="count" v-model="item.count">
-                  <div class="add" v-bind:class="{'not_allowed':item.max===item.count}" v-on:click.stop.prevent="addCount(item)">+</div>
-                </div>
-                <div class="delete_btn" v-on:click.stop.prevent="removepro">删除</div>
-              </div>
-            </slot></div>
-          </label>
+              </slot></div>
+            </label>
+          </div>
         </cells>
       </div>
       <div class="foot">
@@ -83,26 +85,11 @@ export default {
   data () {
     return {
       page:"1",
-      size:"8",
+      size:"20",
       canedit:false,
       checkall:'no',
       checkedArr:[],
-      productArr:[
-        {
-          proid:"1234",
-          checked:false,
-          count:3,
-          min:1,
-          max:10
-        },
-        {
-          proid:"7890",
-          checked:false,
-          count:2,
-          min:1,
-          max:8
-        }
-      ],
+      productArr:[],
       totalnum:0,
       totalprice:"0.00"
     }
@@ -136,7 +123,7 @@ export default {
                   }
                 })
               .catch(function (response) {
-                  console.log("添加到购物车-请求错误：", response)
+                  console.log("获取购物车信息-请求错误：", response)
               });
     },
     formatData(arr){
@@ -146,6 +133,7 @@ export default {
         totalprice+=parseFloat(arr[i].price);
         newArr.push({
           proid:arr[i].proid,
+          imgurl:arr[i].keyfrom,
           shopcartid:arr[i].shopcarid,
           profield:arr[i].profield,
           prodescribe:arr[i].prodescribe,
@@ -159,6 +147,7 @@ export default {
       this.$set(this,"productArr",newArr);
       this.$set(this,"totalprice",totalprice);
     },
+    //全部勾选
     checkAll(){
       setTimeout(()=>{
         let productArr = this.productArr;
@@ -170,14 +159,17 @@ export default {
           }
         }
       },6)
+      //把勾选的购物车id放进数组
       this.pushCheckedid();
     },
+    //点击单个购物车时勾选或取消勾选
     toggleCheck(item){
       if(item.checked===false){
         item.checked=true;
       }else{
         item.checked=false;
       }
+      //判断所有购物车是否都勾选了
       setTimeout(()=>{
         let allchecked=true;
         let productArr = this.productArr;
@@ -192,8 +184,10 @@ export default {
           this.checkall="no";
         }
       },6)
+      //把勾选的购物车id放进数组
       this.pushCheckedid();
     },
+    //把勾选的购物车id放进数组
     pushCheckedid(){
       setTimeout(()=>{
         this.checkedArr.length=0;
@@ -206,27 +200,78 @@ export default {
         this.$set(this,"totalnum",this.checkedArr.length);
       },6)
     },
+    //编辑
     edit(){
       this.canedit=true;
     },
+    //完成
     finish(){
-      this.canedit=false;
+      let params = [];
+      let productArr = this.productArr;
+      for(let i=0;i<productArr.length;i++){
+        params.push({
+          shopcarid:productArr[i].shopcartid,
+          number:productArr[i].count
+        });
+      }
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/updatenumber",params,{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.canedit=false;
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("修改购物车内商品数量-请求错误：", response)
+              });
     },
+    //减少数量
     reduceCount(item){
       if(item.count>item.min){
         item.count--;
       }
     },
+    //增加数量
     addCount(item){
       if(item.count<item.max){
         item.count++;
       }
     },
-    removepro(){
-
+    //删除购物车
+    removepro(scid,index){
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/delete",[scid],{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.productArr.splice(index,1);
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("删除购物车-请求错误：", response)
+              });
     },
+    //结算
     settleAccounts(){
-      alert("123")
+      let params = [];
+      let productArr = this.productArr;
+      for(let i=0;i<productArr.length;i++){
+        if(productArr[i]["checked"]===true){
+          params.push(productArr[i].shopcartid);
+        }
+      }
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",params,{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.$router.push({ name: 'MakeOrder', params: { key: "fromShopcart",value: response.data.data}});
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("结算-请求错误：", response)
+              });
     }
 
   }
@@ -238,6 +283,13 @@ export default {
   .shop_cart{
     text-align: left;
     font-size: .14rem;
+  }
+  .head{
+    width:100%;
+    position: fixed;
+    top:0;
+    left:0;
+    z-index: 20;
   }
   .head .weui_cells{
     margin-top:0;
@@ -256,7 +308,16 @@ export default {
     font-size: .13rem;
     color:#0368FF;
   }
-
+  .body{
+    padding:.5rem 0 .7rem 0;
+  }
+  .body  .weui_cells {
+    background-color: #f2f2f2;
+  }
+  .body .cc{
+    margin-bottom:.1rem;
+    background-color: #ffffff;
+  }
   .body .weui_cells{
     padding:0;
   }
@@ -279,17 +340,22 @@ export default {
   }
   .product p{
     display: block;
+    width:3rem;
     padding-left: .9rem;
     font-size: .12rem;
     margin-bottom: .06rem;
     color:#000000;
   }
   .product p.spec{
+    width:3rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right:.2rem;
     color:#999999;
+  }
+  .product p.price{
+    color:#FF6600;
   }
   .product.change_num p.describe,
   .product.change_num p.spec,

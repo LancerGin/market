@@ -147,14 +147,10 @@ export default {
               });
     },
     buyNow(){
-      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",{
-          "fieldid":[
-            this.fieldid
-          ]
-        },{credentials: false})
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",[this.fieldid],{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
-                      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: this.fieldItems}});
+                      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: response.data.data}});
                   }else{
                       alert(response.data.msg)
                   }
