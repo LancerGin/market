@@ -71,11 +71,14 @@
           </label>
         </cells>
       </div>
+      <!-- 信息提示 结束-->
+      <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
 import {Icon,CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
+import { Toast } from 'vux';
 
 export default {
   name: 'ShopCart',
@@ -91,7 +94,9 @@ export default {
       checkedArr:[],
       productArr:[],
       totalnum:0,
-      totalprice:"0.00"
+      totalprice:"0.00",
+      showToast:false,
+      toastMsg:""
     }
   },
   computed:{
@@ -108,7 +113,8 @@ export default {
     CellsTips,
     Cells,
     Cell,
-    LinkCell
+    LinkCell,
+    Toast
   },
   methods: {
     renderField(){
@@ -141,11 +147,11 @@ export default {
           checked:false,
           count:arr[i].number,
           min:1,
-          max:arr[i].stock
+          max:99
         });
       }
       this.$set(this,"productArr",newArr);
-      this.$set(this,"totalprice",totalprice);
+      this.$set(this,"totalprice",totalprice.toFixed(2));
     },
     //全部勾选
     checkAll(){
@@ -208,7 +214,9 @@ export default {
     finish(){
       let params = [];
       let productArr = this.productArr;
+      let totalprice=10;//运费10块钱
       for(let i=0;i<productArr.length;i++){
+        totalprice+=parseFloat(productArr[i].price);
         params.push({
           shopcarid:productArr[i].shopcartid,
           number:productArr[i].count
@@ -218,6 +226,9 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.canedit=false;
+                      this.$set(this,"totalprice",totalprice.toFixed(2));
+                      this.toastMsg=response.data.msg;
+                      this.showToast=true;
                   }else{
                       alert(response.data.msg)
                   }
@@ -244,6 +255,8 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.productArr.splice(index,1);
+                      this.toastMsg=response.data.msg;
+                      this.showToast=true;
                   }else{
                       alert(response.data.msg)
                   }
@@ -264,7 +277,7 @@ export default {
       this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",params,{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
-                      this.$router.push({ name: 'MakeOrder', params: { key: "fromShopcart",value: response.data.data}});
+                      this.$router.push({ name: 'MakeOrder', params: { key: "fromShopcart",value: response.data.data.out_trade_no}});
                   }else{
                       alert(response.data.msg)
                   }

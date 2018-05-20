@@ -6,32 +6,32 @@
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
           <span slot="body">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
-            <span class="people">收货人：谭帅&nbsp;&nbsp;&nbsp;&nbsp;13088094976</span><br>
-            <span class="address">收货地址：四川省成都市新都区二台子保利紫荆</span>
+            <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
+            <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
           </span>
           <span slot="footer"></span>
         </link-cell>
       </cells>
     </div>
-    <div class="bags">
-      <h3 class="title"><i class="fa fa-shopping-bag"></i>商品1</h3>
+    <div class="bags" v-for="(bag,index) in productArr">
+      <h3 class="title"><i class="fa fa-shopping-bag"></i>商品{{index+1}}</h3>
       <div class="product">
         <div class="img">
-          <img src="" alt="">
+          <img v-bind:src="bag.imgurl" alt="">
         </div>
-        <p>连衣裙套装井口了群套装井口了群套装井口了群套装</p>
-        <p class="spec">规格：红色 m</p>
-        <p><span class="rmb">￥</span>160.00</p>
-        <div class="count">x3</div>
+        <p>{{bag.prodescribe}}</p>
+        <p class="spec">规格：{{bag.profield}} {{bag.spec}}</p>
+        <p><span class="rmb">￥</span>{{bag.price}}</p>
+        <div class="count">x{{bag.count}}</div>
       </div>
       <cells>
         <cell>
           <span slot="body">商品总额：</span>
-          <span slot="footer"><span class="rmb">￥</span>480.00</span>
+          <span slot="footer"><span class="rmb">￥</span>{{bag.totalproprice}}</span>
         </cell>
         <cell>
           <span slot="body">运费：</span>
-          <span slot="footer">+<span class="rmb">￥</span>10.00</span>
+          <span slot="footer">+<span class="rmb">￥</span>{{bag.otherprice}}</span>
         </cell>
         <div class="coupon">
           <cells type="access">
@@ -43,41 +43,7 @@
         </div>
         <cell>
           <span slot="body">合计</span>
-          <span slot="footer"><span class="rmb">￥</span>490.00</span>
-        </cell>
-      </cells>
-    </div>
-    <div class="bags">
-      <h3 class="title"><i class="fa fa-shopping-bag"></i>商品2</h3>
-      <div class="product">
-        <div class="img">
-          <img src="" alt="">
-        </div>
-        <p>连衣裙套装井口了群套装井口了群套装井口了群套装</p>
-        <p class="spec">规格：红色 m</p>
-        <p><span class="rmb">￥</span>160.00</p>
-        <div class="count">x3</div>
-      </div>
-      <cells>
-        <cell>
-          <span slot="body">商品总额：</span>
-          <span slot="footer"><span class="rmb">￥</span>480.00</span>
-        </cell>
-        <cell>
-          <span slot="body">运费：</span>
-          <span slot="footer">+<span class="rmb">￥</span>10.00</span>
-        </cell>
-        <div class="coupon">
-          <cells type="access">
-            <link-cell link="javascript:void(0);">
-              <span slot="body">优惠码</span>
-              <span slot="footer"><span class="coupon_num">暂无可用</span></span>
-            </link-cell>
-          </cells>
-        </div>
-        <cell>
-          <span slot="body">合计</span>
-          <span slot="footer"><span class="rmb">￥</span>490.00</span>
+          <span slot="footer"><span class="rmb">￥</span>{{bag.totalprice}}</span>
         </cell>
       </cells>
     </div>
@@ -99,7 +65,7 @@
 
     <div class="submit">
       <div class="btn">提交订单</div>
-      <div class="total_final">合计: <span><span class="rmb">￥</span>170.00</span></div>
+      <div class="total_final">合计: <span><span class="rmb">￥</span>{{cashCount}}</span></div>
     </div>
 
     <!-- 弹出选择收货地址的面板 开始-->
@@ -118,9 +84,12 @@
     name: 'MakeOrder',
     data () {
       return {
-        orderObj:{},
-        remark:"",
-        switchOn:false,
+        orderid:'',
+        productArr:[], //商品列表
+        remark:"", //留言
+        switchOn:false, //短信通知
+        cashCount:0,//总价
+        address:{},//地址
         chooseAddressBorn:false
       }
     },
@@ -144,7 +113,48 @@
         }else{
           params = JSON.parse(sessionStorage.getItem('order_params'));
         }
-        this.$set(this,"orderObj",params.value);
+        this.$set(this,"orderid",params.value);
+        this.getOrderData();
+      },
+      getOrderData(){
+        this.$http.get(this.GLOBAL.serverSrc + "rest/shopcar/orderInfo/"+this.orderid,
+        {credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                        this.formatData(response.data.data);
+                    }else{
+                        alert(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("获取订单信息-请求错误：", response)
+                });
+      },
+      formatData(obj){
+        let arr = obj.products;
+        let newArr =[];
+        let otherprice = 10;//运费10元
+        for(let i=0;i<arr.length;i++){
+          newArr.push({
+            proid:arr[i].proid,
+            imgurl:arr[i].keyfrom,
+            shopcartid:arr[i].shopcarid,
+            profield:arr[i].profield,
+            spec:arr[i].spec,
+            prodescribe:arr[i].prodescribe,
+            price:arr[i].price,
+            checked:false,
+            count:arr[i].number,
+            totalproprice:(parseFloat(arr[i].price)*(arr[i].number)).toFixed(2),//商品总额
+            otherprice:otherprice.toFixed(2),  //运费
+            totalprice:(parseFloat(arr[i].price)*(arr[i].number)+otherprice).toFixed(2),//合计
+            min:1,
+            max:99
+          });
+        }
+        this.$set(this,"productArr",newArr);
+        this.$set(this,"cashCount",obj.cashCount);
+        this.$set(this,"address",obj.address);
       },
       chooseAddress(){
         this.chooseAddressBorn=true;

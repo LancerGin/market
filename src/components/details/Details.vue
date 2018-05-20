@@ -74,7 +74,7 @@
     <div class="choosespec_container" v-bind:class="{'show':choosespecBorn===true}">
       <ChooseSpec v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
     </div>
-    <!-- 弹出选择规格的面板 结束-->
+    <!-- 信息提示 结束-->
     <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>

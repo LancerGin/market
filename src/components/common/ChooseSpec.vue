@@ -97,9 +97,9 @@ export default {
         this.fieldTitle = this.fieldItems[0].fieldkey;
       }
       //默认选中第一个分类
-      this.renderSpec(0,this.fieldItems[0].img,this.fieldItems[0].speclist);
+      this.setField(0,this.fieldItems[0].img,this.fieldItems[0].speclist);
     },
-    renderSpec(index,imgUrl,obj){
+    setField(index,imgUrl,obj){
       this.$set(this,"fieldSelectedIndex",index);
       //选中某个分类的时候显示此分类下的所有规格和此分类的缩略图
       this.$set(this,"specItems",obj);
