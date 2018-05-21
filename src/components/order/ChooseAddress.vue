@@ -11,29 +11,16 @@
       </div>
       <div class="body">
         <cells type="radio">
-          <label for="address1" class="weui_cell weui_check_label">
+          <label v-bind:for="'address'+index" class="weui_cell weui_check_label" v-for="(address,index) in addressArr">
             <div class="weui_cell_hd"><slot>
               <i class="fa fa-pencil-square-o"></i>
             </slot></div>
             <div class="weui_cell_bd weui_cell_primary"><slot>
-              <span class="people">收货人：谭帅&nbsp;&nbsp;&nbsp;&nbsp;13088094976</span><br>
-              <span class="address">收货地址：四川省成都市新都区二台子保利紫荆</span>
+              <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
+              <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
             </slot></div>
             <div class="weui_cell_ft"><slot>
-              <input type="radio" name="address" class="weui_check" id="address1" value="address1" v-model="picked">
-              <span class="weui_icon_checked"></span>
-            </slot></div>
-          </label>
-          <label for="address2" class="weui_cell weui_check_label">
-            <div class="weui_cell_hd"><slot>
-              <i class="fa fa-pencil-square-o"></i>
-            </slot></div>
-            <div class="weui_cell_bd weui_cell_primary"><slot>
-              <span class="people">收货人：谭帅&nbsp;&nbsp;&nbsp;&nbsp;13088094976</span><br>
-              <span class="address">收货地址：四川省成都市高新区新园南二路索贝数码科技股份有限公司</span>
-            </slot></div>
-            <div class="weui_cell_ft"><slot>
-              <input type="radio" name="address" class="weui_check" id="address2" value="address2" v-model="picked">
+              <input type="radio" name="address" class="weui_check" v-bind:id="'address'+index" v-bind:value="address.addressid" v-model="picked">
               <span class="weui_icon_checked"></span>
             </slot></div>
           </label>
@@ -67,7 +54,20 @@ export default {
   data () {
     return {
       newAddressBorn:false,
+      addressArr:[],
+      address:{},
       picked:""
+    }
+  },
+  watch:{
+    picked:function(val){
+      let arr = this.addressArr;
+      for(let i=0;i<arr.length;i++){
+        if(arr[i].addressid===val){
+          this.$set(this,"address",arr[i]);
+        }
+      }
+      this.$emit('change-address',this.address);
     }
   },
   mounted(){
@@ -84,7 +84,20 @@ export default {
   },
   methods: {
     renderField(){
-
+      this.getOrderData();
+    },
+    getOrderData(){
+      this.$http.get(this.GLOBAL.serverSrc + "rest/address/search",{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.$set(this,"addressArr",response.data.data);
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取收货地址列表-请求错误：", response)
+              });
     },
     newAddress(){
       this.newAddressBorn=true;

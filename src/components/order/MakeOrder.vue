@@ -64,13 +64,13 @@
     </cells>
 
     <div class="submit">
-      <div class="btn">提交订单</div>
+      <div class="btn" v-on:click="comfirOrder">提交订单</div>
       <div class="total_final">合计: <span><span class="rmb">￥</span>{{cashCount}}</span></div>
     </div>
 
     <!-- 弹出选择收货地址的面板 开始-->
     <div class="chooseAddress_container" v-bind:class="{'show':chooseAddressBorn===true}">
-      <ChooseAddress v-on:close-pannel="close"></ChooseAddress>
+      <ChooseAddress v-on:close-pannel="close" v-on:change-address="changeAddress"></ChooseAddress>
     </div>
     <!-- 弹出选择收货地址的面板 结束-->
   </div>
@@ -156,8 +156,32 @@
         this.$set(this,"cashCount",obj.cashCount);
         this.$set(this,"address",obj.address);
       },
+      comfirOrder(){
+        this.$http.post(this.GLOBAL.serverSrc + "rest/order/addOrder",{
+          "out_trade_no":this.orderid,
+        	"payentrance":"1",
+        	"address":{
+        		"addressinfo":this.address.province+this.address.city+this.address.addressinfo,
+        		"receivename":this.address.receivename,
+        		"tel":this.address.tel
+        	}
+        },{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+
+                    }else{
+                        alert(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("提交订单-请求错误：", response)
+                });
+      },
       chooseAddress(){
         this.chooseAddressBorn=true;
+      },
+      changeAddress(msg){
+        this.$set(this,"address",msg);
       },
       close(){
         this.chooseAddressBorn=false;
