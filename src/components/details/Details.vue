@@ -70,6 +70,21 @@
       <img v-for="(slide, key) in slides" v-bind:src="slide.url" alt="slide.type">
     </div>
     <!-- 商品详情介绍 结束 -->
+    <!-- 底部导航 -->
+    <div class="navbar">
+      <div class="house" v-on:click="turnTo('/')">
+        <i class="fa fa-home" aria-hidden="true"></i>
+      </div>
+      <div class="classification" v-on:click="turnTo('/classification')">
+        <span>商品分类</span>
+      </div>
+      <div class="shopping_cart" v-on:click="turnTo('/shopcart')">
+        <span>购物车</span>
+      </div>
+      <div class="vip" v-on:click="turnTo('/vip')">
+        <span>会员中心</span>
+      </div>
+    </div>
     <!-- 弹出选择规格的面板 开始-->
     <div class="choosespec_container" v-bind:class="{'show':choosespecBorn===true}">
       <ChooseSpec v-bind:specObj="detailsObj" v-on:close-pannel="close"></ChooseSpec>
@@ -179,6 +194,7 @@
   }
   .details.noscroll{
     position: fixed;
+    width:100%;
   }
   .top{
     width: 100%;
@@ -309,6 +325,34 @@
   }
   .rich_details img{
     display: block;
+  }
+
+  .navbar{
+    position: fixed;
+    bottom:0;
+    left:0;
+    width: 100%;
+    height:.54rem;
+    font-size:.16rem;
+    background-color: #f2f2f2;
+    box-shadow: 0 0 1px #eeeeee;
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    justify-content: space-between;
+  }
+  .navbar>div{
+    height:.54rem;
+    line-height:.54rem;
+    background-color:#ffffff;
+    margin-left:1px;
+    flex-grow: 2;
+  }
+  .navbar>div span{
+    font-size:.14rem;
+  }
+  .navbar>div.house{
+    flex-grow: 1;
+    color:#999999;
   }
 
   .choosespec_container{

@@ -1,10 +1,10 @@
-<!-- 新增收货地址 -->
+<!-- 编辑收货地址 -->
 <template>
-  <div class="new_address">
+  <div class="edit_address">
     <div class="zz"></div>
     <div class="pan">
       <div class="head">
-        <div class="title">新增收货地址</div>
+        <div class="title">编辑收货地址</div>
         <div class="icon" v-on:click="cancel">
           <icon name="cancel"></icon>
         </div>
@@ -71,9 +71,12 @@
 import {Icon,CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
 
 export default {
-  name: 'NewAddress',
+  name: 'EditAddress',
   props: {
-
+    addressid:{
+      type: String,
+      required: true
+    }
   },
   data () {
     return {
@@ -89,8 +92,13 @@ export default {
       postalcode:""
     }
   },
+  watch:{
+    addressid:function(){
+      this.renderField();
+    }
+  },
   mounted(){
-    this.getChinaJson();
+
   },
   components: {
     Icon,
@@ -101,11 +109,37 @@ export default {
     LinkCell
   },
   methods: {
+    renderField(){
+      this.getChinaJson();
+      this.getAddressData();
+    },
+    getAddressData(){
+      this.$http.get(this.GLOBAL.serverSrc + "rest/address/findById/"+this.addressid,{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                    let address = response.data.data;
+                      this.$set(this,"people",address.receivename);
+                      this.$set(this,"phone",address.tel);
+                      this.$set(this,"province",address.province);
+                      this.setCity();
+                      this.$set(this,"city",address.city);
+                      this.setArea();
+                      this.$set(this,"address",address.addressinfo);
+                      this.$set(this,"postalcode",address.postcode);
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取收货地址-请求错误：", response)
+              });
+    },
     getChinaJson(){
       this.$http.get('../../../static/china.json')
                 .then(function (response) {
                     let arr =  response.data;
                     this.$set(this,'provinceArr',arr);
+
                 })
               .catch(function (response) {
                   console.log("获取地区数据-请求错误：", response)
@@ -133,9 +167,10 @@ export default {
         }
       }
     },
-    //添加收货地址
+    //修改收货地址
     save(){
-      this.$http.post(this.GLOBAL.serverSrc + "rest/address/save",{
+      this.$http.post(this.GLOBAL.serverSrc + "rest/address/update",{
+        "addressid": this.addressid,
         "province": this.province,
         "city": this.city,
         "addressinfo": this.area+this.address,
@@ -150,7 +185,7 @@ export default {
                   }
                 })
               .catch(function (response) {
-                  console.log("添加收货地址-请求错误：", response)
+                  console.log("修改收货地址-请求错误：", response)
               });
     },
     cancel(){
@@ -162,7 +197,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .new_address{
+  .edit_address{
     position: fixed;
     top:0;
     left:0;
@@ -171,10 +206,10 @@ export default {
     height:120%;
     text-align: left;
   }
-  .new_address .weui_input{
+  .edit_address .weui_input{
     font-size: .14rem;
   }
-  .new_address .weui_cell_ft{
+  .edit_address .weui_cell_ft{
     flex-grow: 1;
   }
   .zz{

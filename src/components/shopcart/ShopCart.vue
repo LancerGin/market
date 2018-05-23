@@ -3,8 +3,8 @@
   <div class="shop_cart">
       <div class="head">
         <cells type="checkbox">
-          <label for="checkall1" class="weui_cell weui_check_label" v-on:click="checkAll()">
-            <div class="weui_cell_hd"><slot>
+          <label for="checkall1" class="weui_cell weui_check_label">
+            <div class="weui_cell_hd" v-on:click="checkAll()"><slot>
               <input type="checkbox" name="checkall" class="weui_check" id="checkall1" true-value="yes" false-value="no" v-model="checkall">
               <span class="weui_icon_checked"></span>
             </slot></div>
@@ -21,10 +21,13 @@
       <div class="body">
         <cells type="checkbox">
           <div v-for="(item,index) in productArr" class="cc">
-            <label v-bind:for="item.shopcartid" v-on:click="toggleCheck(item)" class="weui_cell weui_check_label">
-              <div class="weui_cell_hd"><slot>
+            <label v-bind:for="item.shopcartid" class="weui_cell weui_check_label">
+              <div v-if="item.prostatus===1" class="weui_cell_hd" v-on:click="toggleCheck(item)"><slot>
                 <input type="checkbox" name="item.shopcartid" class="weui_check" id="item.shopcartid" v-bind:value="item.shopcartid" v-bind:checked="item.checked">
                 <span class="weui_icon_checked"></span>
+              </slot></div>
+              <div v-else class="weui_cell_hd"><slot>
+                <span class="statusinfo">{{item.statusinfo}}</span>
               </slot></div>
               <div class="weui_cell_bd weui_cell_primary"><slot>
                 <div class="product" v-bind:class="{'change_num':canedit===true}">
@@ -37,10 +40,13 @@
                     <p class="price"><span class="rmb">￥</span>{{item.price}}</p>
                   </div>
                   <div class="count">x{{item.count}}</div>
-                  <div class="count_dos">
+                  <div v-if="item.prostatus===1" class="count_dos">
                     <div class="reduce" v-bind:class="{'not_allowed':item.min===item.count}" v-on:click.stop.prevent="reduceCount(item)">-</div>
-                    <input type="number" name="count" v-model="item.count">
+                    <input type="number" name="count" v-model="item.count" readonly>
                     <div class="add" v-bind:class="{'not_allowed':item.max===item.count}" v-on:click.stop.prevent="addCount(item)">+</div>
+                  </div>
+                  <div v-else class="count_dos">
+                    <span>{{item.statusinfo}}</span>
                   </div>
                   <div class="delete_btn" v-on:click.stop.prevent="removepro(item.shopcartid,index)">删除</div>
                 </div>
@@ -51,8 +57,8 @@
       </div>
       <div class="foot">
         <cells type="checkbox">
-          <label for="checkall2" class="weui_cell weui_check_label" v-on:click="checkAll()">
-            <div class="weui_cell_hd"><slot>
+          <label for="checkall2" class="weui_cell weui_check_label">
+            <div class="weui_cell_hd" v-on:click="checkAll()"><slot>
               <input type="checkbox" name="checkall2" class="weui_check" id="checkall2" true-value="yes" false-value="no" v-model="checkall">
               <span class="weui_icon_checked"></span>
               <span class="title">全选</span>
@@ -71,7 +77,7 @@
           </label>
         </cells>
       </div>
-      <!-- 信息提示 结束-->
+      <!-- 信息提示 -->
       <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
@@ -134,9 +140,7 @@ export default {
     },
     formatData(arr){
       let newArr =[];
-      let totalprice=10;//运费10块钱
       for(let i=0;i<arr.length;i++){
-        totalprice+=parseFloat(arr[i].price);
         newArr.push({
           proid:arr[i].proid,
           imgurl:arr[i].keyfrom,
@@ -147,10 +151,24 @@ export default {
           checked:false,
           count:arr[i].number,
           min:1,
-          max:99
+          max:arr[i].stock,
+          prostatus:arr[i].prostatus,
+          statusinfo:arr[i].statusinfo
         });
       }
       this.$set(this,"productArr",newArr);
+      //计算总价
+      this.showTotalprice();
+    },
+    //计算总价
+    showTotalprice(){
+      let productArr = this.productArr;
+      let totalprice=10;//运费10块钱
+      for(let i=0;i<productArr.length;i++){
+        if(productArr[i]["checked"]===true){
+          totalprice+=(parseFloat(productArr[i].price)*productArr[i].count);
+        }
+      }
       this.$set(this,"totalprice",totalprice.toFixed(2));
     },
     //全部勾选
@@ -192,6 +210,7 @@ export default {
       },6)
       //把勾选的购物车id放进数组
       this.pushCheckedid();
+
     },
     //把勾选的购物车id放进数组
     pushCheckedid(){
@@ -204,6 +223,8 @@ export default {
           }
         }
         this.$set(this,"totalnum",this.checkedArr.length);
+        //计算总价
+        this.showTotalprice();
       },6)
     },
     //编辑
@@ -214,9 +235,7 @@ export default {
     finish(){
       let params = [];
       let productArr = this.productArr;
-      let totalprice=10;//运费10块钱
       for(let i=0;i<productArr.length;i++){
-        totalprice+=parseFloat(productArr[i].price);
         params.push({
           shopcarid:productArr[i].shopcartid,
           number:productArr[i].count
@@ -226,9 +245,10 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.canedit=false;
-                      this.$set(this,"totalprice",totalprice.toFixed(2));
                       this.toastMsg=response.data.msg;
                       this.showToast=true;
+                      //把勾选的购物车id放进数组
+                      this.pushCheckedid();
                   }else{
                       alert(response.data.msg)
                   }
@@ -257,6 +277,8 @@ export default {
                       this.productArr.splice(index,1);
                       this.toastMsg=response.data.msg;
                       this.showToast=true;
+                      //把勾选的购物车id放进数组
+                      this.pushCheckedid();
                   }else{
                       alert(response.data.msg)
                   }
@@ -302,7 +324,7 @@ export default {
     position: fixed;
     top:0;
     left:0;
-    z-index: 20;
+    z-index: 200;
   }
   .head .weui_cells{
     margin-top:0;
@@ -336,6 +358,16 @@ export default {
   }
   .body .weui_cells .weui_cell{
     padding:0 0 0 .16rem;
+  }
+  .body .weui_cells .weui_cell .weui_cell_hd{
+    min-width: .28rem;
+  }
+  .body .weui_cells .weui_cell .weui_cell_hd .statusinfo{
+    display: block;
+    font-size: .12rem;
+    text-align: center;
+    background-color: #999;
+    color:#ffffff;
   }
   .product{
     padding: .1rem;
@@ -429,7 +461,7 @@ export default {
     position: absolute;
     font-size: 0.13rem;
     top:0;
-    right:0;
+    right:.08rem;
     z-index: 40;
     width:.5rem;
     height:1rem;
@@ -448,7 +480,7 @@ export default {
     position: fixed;
     bottom:0;
     left:0;
-    z-index: 20;
+    z-index: 200;
     background-color: #ffffff;
     width:100%;
     height:.5rem;

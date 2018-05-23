@@ -109,7 +109,7 @@ export default {
     padding-bottom:.6rem;
   }
   .swiper {
-      height: 2rem;
+      height: 1.8rem;
   }
   .cover_search{
       width: 100%;
@@ -150,6 +150,7 @@ export default {
     width: 100%;
     height:.54rem;
     font-size:.16rem;
+    box-shadow: 0 0 1px #eeeeee;
     background-color: #f2f2f2;
     display: -webkit-flex; /* Safari */
     display: flex;

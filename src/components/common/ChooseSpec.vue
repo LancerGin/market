@@ -16,7 +16,7 @@
       <div class="body">
         <div class="field_title">{{fieldTitle}}：</div>
         <div class="field_body">
-          <div class="field" v-for="(field,key) in fieldItems" v-bind:class="{'selected':key===fieldSelectedIndex}" v-on:click="renderSpec(key,field.img,field.speclist)">
+          <div class="field" v-for="(field,key) in fieldItems" v-bind:class="{'selected':key===fieldSelectedIndex}" v-on:click="setField(key,field.img,field.speclist)">
             {{field.field?field.field:"默认"}}
           </div>
         </div>
@@ -33,7 +33,7 @@
         </div>
         <div class="count_dos">
           <div class="reduce" v-bind:class="{'not_allowed':min===count}" v-on:click="reduceCount">-</div>
-          <input type="number" name="count" v-model="count">
+          <input type="number" name="count" v-model="count" readonly>
           <div class="add" v-bind:class="{'not_allowed':max===count}" v-on:click="addCount">+</div>
         </div>
       </div>
@@ -119,6 +119,10 @@ export default {
       //并把 id保存下来（加入购物车或者下单需要）
       this.$set(this,"fieldid",obj.fieldid);
       this.$set(this,"price",obj.price);
+      //每种规格的库存
+      this.$set(this,"max",obj.stock);
+      // 每次选择分类重置数量为1
+      this.$set(this,"count",1);
     },
     reduceCount(){
       if(this.count>this.min){

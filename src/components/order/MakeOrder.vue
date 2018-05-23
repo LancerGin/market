@@ -1,6 +1,6 @@
 <!-- 生成订单待提交 -->
 <template>
-  <div class="make_order">
+  <div class="make_order" v-bind:class="{'noscroll':chooseAddressBorn===true}">
     <div class="receiving">
       <cells type="access">
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
@@ -196,6 +196,10 @@
     text-align: left;
     font-size:.13rem;
     color:#000;
+  }
+  .make_order.noscroll{
+    position: fixed;
+    width:100%;
   }
   .weui_cells{
     margin-top:0;

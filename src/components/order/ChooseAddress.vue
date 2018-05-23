@@ -10,21 +10,23 @@
         </div>
       </div>
       <div class="body">
-        <cells type="radio">
-          <label v-bind:for="'address'+index" class="weui_cell weui_check_label" v-for="(address,index) in addressArr">
-            <div class="weui_cell_hd"><slot>
-              <i class="fa fa-pencil-square-o"></i>
-            </slot></div>
-            <div class="weui_cell_bd weui_cell_primary"><slot>
-              <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
-              <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
-            </slot></div>
-            <div class="weui_cell_ft"><slot>
-              <input type="radio" name="address" class="weui_check" v-bind:id="'address'+index" v-bind:value="address.addressid" v-model="picked">
-              <span class="weui_icon_checked"></span>
-            </slot></div>
-          </label>
-        </cells>
+        <div class="ul">
+          <cells type="radio">
+            <label v-bind:for="'address'+index" class="weui_cell weui_check_label" v-for="(address,index) in addressArr">
+              <div class="weui_cell_hd" v-on:click.stop.prevent="editAddress(address.addressid)"><slot>
+                <i class="fa fa-pencil-square-o"></i>
+              </slot></div>
+              <div class="weui_cell_bd weui_cell_primary"><slot>
+                <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
+                <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
+              </slot></div>
+              <div class="weui_cell_ft"><slot>
+                <input type="radio" name="address" class="weui_check" v-bind:id="'address'+index" v-bind:value="address.addressid" v-model="picked">
+                <span class="weui_icon_checked"></span>
+              </slot></div>
+            </label>
+          </cells>
+        </div>
         <cells type="access">
           <link-cell link="javascript:void(0);" class="new" v-on:click.native="newAddress">
             <span slot="body"><i class="fa fa-plus-circle" aria-hidden="true"></i>新建地址</span>
@@ -39,12 +41,22 @@
       <NewAddress v-on:close-pannel="closeNewAddress" v-on:confirm="confirmNewAddress"></NewAddress>
     </div>
     <!-- 弹出新建收货地址的面板 结束-->
+    <!-- 弹出编辑收货地址的面板 开始-->
+    <div class="editAddress_container" v-bind:class="{'show':editAddressBorn===true}">
+      <EditAddress v-bind:addressid="editAddressid" v-on:close-pannel="closeEditAddress" v-on:confirm="confirmEditAddress"></EditAddress>
+    </div>
+    <!-- 弹出编辑收货地址的面板 结束-->
+
+    <!-- 信息提示 -->
+    <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
 import {Icon,CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
+import { Toast } from 'vux';
 import NewAddress from '@/components/common/NewAddress.vue';
+import EditAddress from '@/components/common/EditAddress.vue';
 
 export default {
   name: 'ChooseAddress',
@@ -54,9 +66,13 @@ export default {
   data () {
     return {
       newAddressBorn:false,
+      editAddressBorn:false,
       addressArr:[],
       address:{},
-      picked:""
+      picked:"",
+      editAddressid:"",
+      showToast:false,
+      toastMsg:""
     }
   },
   watch:{
@@ -68,6 +84,7 @@ export default {
         }
       }
       this.$emit('change-address',this.address);
+      this.cancel();
     }
   },
   mounted(){
@@ -80,13 +97,15 @@ export default {
     Cells,
     Cell,
     LinkCell,
-    NewAddress
+    Toast,
+    NewAddress,
+    EditAddress
   },
   methods: {
     renderField(){
-      this.getOrderData();
+      this.getAddressData();
     },
-    getOrderData(){
+    getAddressData(){
       this.$http.get(this.GLOBAL.serverSrc + "rest/address/search",{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
@@ -104,11 +123,26 @@ export default {
       // this.$router.push({ name: 'NewAddress', params: { key: "fromOrderPage"}});
     },
     confirmNewAddress(msg){
-      alert(msg)
+      this.toastMsg=msg;
+      this.showToast=true;
+      this.getAddressData();
       this.newAddressBorn=false;
     },
     closeNewAddress(){
       this.newAddressBorn=false;
+    },
+    editAddress(addressid){
+      this.editAddressid=addressid;
+      this.editAddressBorn=true;
+    },
+    confirmEditAddress(msg){
+      this.toastMsg=msg;
+      this.showToast=true;
+      this.getAddressData();
+      this.editAddressBorn=false;
+    },
+    closeEditAddress(){
+      this.editAddressBorn=false;
     },
     cancel(){
       this.$emit('close-pannel');
@@ -167,6 +201,10 @@ export default {
   .pan .body{
     width:100%;
   }
+  .pan .body .ul{
+    height:2rem;
+    overflow: auto;
+  }
   .pan .body .weui_cells{
     margin-top:0;
   }
@@ -197,6 +235,13 @@ export default {
     display: none;
   }
   .newAddress_container.show{
+    display: block;
+  }
+
+  .editAddress_container{
+    display: none;
+  }
+  .editAddress_container.show{
     display: block;
   }
 
