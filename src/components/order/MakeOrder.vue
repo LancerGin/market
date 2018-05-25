@@ -181,7 +181,26 @@
         this.chooseAddressBorn=true;
       },
       changeAddress(msg){
-        this.$set(this,"address",msg);
+        // this.changeDefaultAddress(this.address.addressid,msg.addressid);
+        setTimeout(()=>{
+          this.$set(this,"address",msg);
+        },2);
+      },
+      changeDefaultAddress(oldid,newid){
+        this.$http.post(this.GLOBAL.serverSrc + "rest/address/",{
+          "new":newid,
+        	"old":oldid
+        },{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+
+                    }else{
+                        alert(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("更改默认地址-请求错误：", response)
+                });
       },
       close(){
         this.chooseAddressBorn=false;

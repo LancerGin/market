@@ -66,7 +66,7 @@
             <div class="weui_cell_bd weui_cell_primary"><slot>
               <div class="info">
                 <p>合计：<span>{{totalprice}}</span></p>
-                <p>含运费：￥10.00</p>
+                <p>含运费：￥{{postage}}</p>
               </div>
             </slot></div>
             <div class="weui_cell_ft"><slot>
@@ -101,6 +101,7 @@ export default {
       productArr:[],
       totalnum:0,
       totalprice:"0.00",
+      postage:"0.00",
       showToast:false,
       toastMsg:""
     }
@@ -148,6 +149,7 @@ export default {
           profield:arr[i].profield,
           prodescribe:arr[i].prodescribe,
           price:arr[i].price,
+          postage:arr[i].freight,
           checked:false,
           count:arr[i].number,
           min:1,
@@ -163,13 +165,16 @@ export default {
     //计算总价
     showTotalprice(){
       let productArr = this.productArr;
-      let totalprice=10;//运费10块钱
+      let postage = 0;//运费
+      let totalprice = 0;//商品总价
       for(let i=0;i<productArr.length;i++){
         if(productArr[i]["checked"]===true){
           totalprice+=(parseFloat(productArr[i].price)*productArr[i].count);
+          postage+=parseFloat(productArr[i].postage);
         }
       }
-      this.$set(this,"totalprice",totalprice.toFixed(2));
+      this.$set(this,"postage",postage.toFixed(2));
+      this.$set(this,"totalprice",(totalprice+postage).toFixed(2));
     },
     //全部勾选
     checkAll(){
