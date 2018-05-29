@@ -6,25 +6,25 @@
     </div>
     <div class="order">
       <div class="orderlist">
-        <div class="wait_pay">
+        <div class="wait_pay" v-on:click="lookList('wait_pay',1)">
           <i class="fa fa-suitcase"></i>
-          <p>待付款</p>
+          <p>待付款<badge v-if="num.noPay>0" v-bind:text="num.noPay"></badge></p>
         </div>
-        <div class="wait_send">
+        <div class="wait_send" v-on:click="lookList('wait_send',2)">
           <i class="fa fa-clock-o"></i>
-          <p>待发货</p>
+          <p>待发货<badge v-if="num.noSendProduct>0" v-bind:text="num.noSendProduct"></badge></p>
         </div>
-        <div class="had_send">
+        <div class="had_send" v-on:click="lookList('had_send',3)">
           <i class="fa fa-truck"></i>
-          <p>已发货</p>
+          <p>已发货<badge v-if="num.noReceiveProduct>0" v-bind:text="num.noReceiveProduct"></badge></p>
         </div>
-        <div class="finish">
+        <div class="finish" v-on:click="lookList('finish',4)">
           <i class="fa fa-calendar-check-o"></i>
           <p>已完成</p>
         </div>
       </div>
       <group>
-        <cell title="全部订单" is-link v-on:click.native="turnTo('/orderlist')">
+        <cell title="全部订单" is-link v-on:click.native="lookList('all',0)">
           <i slot="icon" width="20" style="display:block;margin-right:.16rem;" class="fa fa-file-text-o" aria-hidden="true"></i>
         </cell>
       </group>
@@ -72,7 +72,7 @@
 
 <script>
 
-import { Group,Cell,Toast } from 'vux'
+import { Group,Cell,Toast,Badge } from 'vux'
 
 export default {
   name:"Vip",
@@ -83,7 +83,8 @@ export default {
   components: {
     Group,
     Cell,
-    Toast
+    Toast,
+    Badge
   },
 
   data() {
@@ -92,18 +93,41 @@ export default {
         url:"../../static/img/logo.png",
         slogan:"亲爱的小伙伴，欢迎光临 潮流设计小店"
       },
+      num:{
+        noReceiveProduct:0,
+        noSendProduct:0,
+        noPay:0
+      },
       showToast:false,
       toastMsg:""
     };
   },
-
+  created(){
+    this.getNum();
+  },
   methods: {
+    getNum(){
+      this.$http.get(this.GLOBAL.serverSrc + "rest/order/selectNumber",{credentials: false})
+                .then(function (response) {
+                  if(response.data.code==="0000"){
+                      this.$set(this,"num",response.data.data)
+                  }else{
+                      alert(response.data.msg)
+                  }
+                })
+              .catch(function (response) {
+                  console.log("获取订单数量统计-请求错误：", response)
+              });
+    },
     showTips(msg){
       this.toastMsg=msg;
       this.showToast=true;
     },
     turnTo(link){
       this.$router.push(link);
+    },
+    lookList(key,value){
+      this.$router.push({ name: 'OrderList', params: { key: key,value: value}});
     }
   }
 }
@@ -167,6 +191,12 @@ export default {
 .order .orderlist>div>p{
   font-size:.12rem;
   color:#646464;
+  position: relative;
+}
+.order .orderlist>div>p>.vux-badge-single{
+  position: absolute;
+  top:-.36rem;
+  right:-.04rem;
 }
 
 .navbar{

@@ -13,7 +13,7 @@
         <p>{{order.productinfo.prodescribe}}</p>
         <p class="spec">规格：{{order.productinfo.FIELD?order.productinfo.FIELD:'默认'}} {{order.productinfo.spce}}</p>
         <p><span class="rmb">￥</span>{{order.price}}</p>
-        <div class="count">{{order.number}}</div>
+        <div class="count">x{{order.number}}</div>
       </div>
       <group>
         <cell v-bind:title="order.createtime"><span style="color:#646464;">合计:￥{{order.paycash}}</span></cell>
@@ -49,6 +49,7 @@ export default {
 
   data() {
     return {
+      sValue:0, //查询列表的条件值
       showpage:1, //页码
       pageSize:10, //分页后每次请求的数据量
       nomore:false, //判断是否最后一页数据
@@ -58,16 +59,37 @@ export default {
       toastMsg:""
     };
   },
-  created(){
-    this.getOrderList();
+  mounted(){
+    this.getParams();
   },
   methods: {
+    getParams(){
+      let params = {};
+      if(this.$route.params.value!=undefined){
+        sessionStorage.setItem('orderlist_params',JSON.stringify(this.$route.params));
+        params = this.$route.params;
+      }else{
+        params = JSON.parse(sessionStorage.getItem('orderlist_params'));
+      }
+      this.$set(this,"sValue",params.value);
+      this.getOrderList();
+    },
     getOrderList(){
       this.requestIsBack = false;
-      this.$http.post(this.GLOBAL.serverSrc + "rest/order/cutpage",{
-        "page":this.showpage,
-      	"size":this.pageSize
-      },{credentials: false})
+      let params = {};
+      if(this.sValue===0){
+        params = {
+          "page":this.showpage,
+        	"size":this.pageSize
+        }
+      }else{
+        params = {
+          "page":this.showpage,
+        	"size":this.pageSize,
+          "status":this.sValue
+        }
+      }
+      this.$http.post(this.GLOBAL.serverSrc + "rest/order/cutpage",params,{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.requestIsBack = true;
@@ -145,12 +167,13 @@ export default {
   　　}
     },
     timeout(obj){
+      obj.showTime = this.formatTime(obj.orderlimittime*1000);
       let s = parseInt(obj.orderlimittime);
       setTimeout(()=>{
         if((s-1)<0){
           obj.orderlimittime=0;
           obj.status=5;
-          onj.statusinfo="交易关闭";
+          obj.statusinfo="交易关闭";
         }else{
           this.timeout(obj);
           obj.orderlimittime=s-1;
@@ -161,16 +184,13 @@ export default {
     formatTime(ms){
       let m = parseInt((ms % (1000 * 60 * 60)) / (1000 * 60));
       let s = (ms % (1000 * 60)) / 1000;
-      let minutes = m>10?m:"0"+m;
-      let seconds = s>10?s:"0"+s;
+      let minutes = m<10?"0"+m:m;
+      let seconds = s<10?"0"+s:s;
       return minutes + " : " + seconds
     },
     showTips(msg){
       this.toastMsg=msg;
       this.showToast=true;
-    },
-    turnTo(link){
-      this.$router.push(link);
     }
   }
 }

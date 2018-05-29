@@ -168,7 +168,8 @@
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
-
+                        //跳转到订单列表页，并查询未付款订单
+                        this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
                     }else{
                         alert(response.data.msg)
                     }
