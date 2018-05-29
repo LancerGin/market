@@ -20,7 +20,7 @@
           <img v-bind:src="bag.imgurl" alt="">
         </div>
         <p>{{bag.prodescribe}}</p>
-        <p class="spec">规格：{{bag.profield}} {{bag.spec}}</p>
+        <p class="spec">规格：{{bag.profield?bag.profield:'默认'}} {{bag.spec}}</p>
         <p><span class="rmb">￥</span>{{bag.price}}</p>
         <div class="count">x{{bag.count}}</div>
       </div>
@@ -33,14 +33,14 @@
           <span slot="body">运费：</span>
           <span slot="footer">+<span class="rmb">￥</span>{{bag.otherprice}}</span>
         </cell>
-        <div class="coupon">
+        <!-- <div class="coupon">
           <cells type="access">
             <link-cell link="javascript:void(0);">
               <span slot="body">优惠码</span>
               <span slot="footer"><span class="coupon_num">暂无可用</span></span>
             </link-cell>
           </cells>
-        </div>
+        </div> -->
         <cell>
           <span slot="body">合计</span>
           <span slot="footer"><span class="rmb">￥</span>{{bag.totalprice}}</span>
@@ -48,7 +48,7 @@
       </cells>
     </div>
 
-    <cells type="form" class="other">
+    <!-- <cells type="form" class="other">
       <div class="weui_cell remark">
         <div class="weui_cell_bd weui_cell_primary"><slot><span>买家留言：</span></slot></div>
         <div class="weui_cell_ft"><slot>
@@ -61,7 +61,7 @@
           <input type="checkbox" id="id" name="switch" class="weui_switch" v-model="switchOn">
         </slot></div>
       </div>
-    </cells>
+    </cells> -->
 
     <div class="submit">
       <div class="btn" v-on:click="comfirOrder">提交订单</div>

@@ -36,7 +36,7 @@
                   </div>
                   <div class="det">
                     <p class="describe">{{item.prodescribe}}</p>
-                    <p class="spec">{{item.profield}}</p>
+                    <p class="spec">{{item.profield}} {{item.spec}}</p>
                     <p class="price"><span class="rmb">￥</span>{{item.price}}</p>
                   </div>
                   <div class="count">x{{item.count}}</div>
@@ -146,7 +146,8 @@ export default {
           proid:arr[i].proid,
           imgurl:arr[i].keyfrom,
           shopcartid:arr[i].shopcarid,
-          profield:arr[i].profield,
+          profield:arr[i].profield?arr[i].profield:"默认",
+          spec:arr[i].spec,
           prodescribe:arr[i].prodescribe,
           price:arr[i].price,
           postage:arr[i].freight,
@@ -180,10 +181,14 @@ export default {
     checkAll(){
       setTimeout(()=>{
         let productArr = this.productArr;
-        for(let i=0;i<productArr.length;i++){
-          if(this.allchecked){
-            productArr[i]["checked"]=true;
-          }else{
+        if(this.allchecked){
+          for(let i=0;i<productArr.length;i++){
+            if(productArr[i].prostatus===1){
+              productArr[i]["checked"]=true;
+            }
+          }
+        }else{
+          for(let i=0;i<productArr.length;i++){
             productArr[i]["checked"]=false;
           }
         }

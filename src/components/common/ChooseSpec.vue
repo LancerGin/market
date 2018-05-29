@@ -22,12 +22,15 @@
         </div>
         <div class="spec_title">{{specTitle}}：</div>
         <div class="spec_body">
-          <div class="spec" v-for="(spec,key) in specItems" v-bind:class="{'selected':key===specSelectedIndex}" v-on:click="setSpec(key,spec)">
+          <div v-if="choice" v-for="(spec,key) in specItems"class="spec" v-bind:class="{'selected':key===specSelectedIndex}" v-on:click="setSpec(key,spec)">
+            {{spec.spec?spec.spec:"默认"}}
+          </div>
+          <div v-else class="spec not_allowed">
             {{spec.spec?spec.spec:"默认"}}
           </div>
         </div>
       </div>
-      <div class="count">
+      <div v-if="choice" class="count">
         <div class="count_title">
           购买数量：
         </div>
@@ -36,19 +39,27 @@
           <input type="number" name="count" v-model="count" readonly>
           <div class="add" v-bind:class="{'not_allowed':max===count}" v-on:click="addCount">+</div>
         </div>
+        <div class="count_info">(库存: {{max}})</div>
       </div>
-      <div class="btns">
+      <div v-else class="count">
+        <div class="count_title warn">
+          售罄
+        </div>
+      </div>
+      <div v-if="choice" class="btns">
         <div class="add_to_shopcart btn" v-on:click="addToShopCart">加入购物车</div>
         <div class="btn" v-on:click="buyNow">立即购买</div>
       </div>
+      <div v-else class="btns not_allowed">
+        <div class="add_to_shopcart btn" >加入购物车</div>
+        <div class="btn">立即购买</div>
+      </div>
     </div>
-    <toast v-model="showPositionValue" type="text" :time="8000" is-show-mask text="添加成功" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
-import {Icon} from 'vue-weui';
-import { Toast } from 'vux'
+import {Icon} from 'vue-weui'
 
 export default {
   name: 'specItem',
@@ -73,7 +84,7 @@ export default {
       specItems:[],
       specTitle:"规格",
       specSelectedIndex:0,
-      showPositionValue:false
+      choice:false
     }
   },
   watch:{
@@ -87,8 +98,7 @@ export default {
     this.renderField();
   },
   components: {
-    Icon,
-    Toast
+    Icon
   },
   methods: {
     renderField(){
@@ -99,21 +109,30 @@ export default {
       //默认选中第一个分类
       this.setField(0,this.fieldItems[0].img,this.fieldItems[0].speclist);
     },
-    setField(index,imgUrl,obj){
+    setField(index,imgUrl,arr){
       this.$set(this,"fieldSelectedIndex",index);
       //选中某个分类的时候显示此分类下的所有规格和此分类的缩略图
-      this.$set(this,"specItems",obj);
+      this.$set(this,"specItems",arr);
       this.$set(this,"img",imgUrl);
       //如果此商品有自定义的规格类型就显示
       if(this.specItems[0].speckey){
         this.specTitle = this.specItems[0].speckey;
       }
-      //默认选中第一个规格
+      //默认选中第一个规格（还有库存的）
       setTimeout(()=>{
-        this.setSpec(0,this.specItems[0]);
+        this.setSpec(0,arr[0]);
+        for(let i=0;i<arr.length;i++){
+          if(arr[i].choice){
+            continue
+          }else{
+            this.setSpec(i,arr[i]);
+            break
+          }
+        }
       },100);
     },
     setSpec(index,obj){
+      this.$set(this,"choice",obj.choice);
       this.$set(this,"specSelectedIndex",index);
       //选中分类下的一个规格以后，显示此规格的价格
       //并把 id保存下来（加入购物车或者下单需要）
@@ -151,10 +170,13 @@ export default {
               });
     },
     buyNow(){
-      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",[this.fieldid],{credentials: false})
+      this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproduct",{
+        "fieldid":this.fieldid,
+        "number":this.count
+      },{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
-                      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: response.data.data}});
+                      this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: response.data.data.out_trade_no}});
                   }else{
                       alert(response.data.msg)
                   }
@@ -260,6 +282,11 @@ export default {
     font-size: 0.13rem;
     line-height:.3rem;
   }
+  .pan .count .count_title.warn{
+    text-align: center;
+    color:#F43530;
+    font-size: 0.16rem;
+  }
   .pan .body .field_body,
   .pan .body .spec_body{
     display: -webkit-flex; /* Safari */
@@ -283,10 +310,22 @@ export default {
     border-color:#99CC99;
     background-color:#99CC99;
   }
+  .pan .body .spec.not_allowed{
+    color:#cccccc;
+    border-color:#f2f2f2;
+    background-color:#f2f2f2;
+  }
   .pan .count{
     height:.5rem;
     padding-top:.06rem;
     position: relative;
+  }
+  .pan .count .count_info{
+    position: absolute;
+    font-size: 0.13rem;
+    top:.22rem;
+    right:1.32rem;
+    z-index: 40;
   }
   .pan .count .count_dos{
     position: absolute;
@@ -351,8 +390,12 @@ export default {
     background-color:#99CC99;
     flex-grow: 1;
   }
+  .btns.not_allowed .btn{
+    color:#cccccc;
+    background-color:#f2f2f2;
+  }
   .btns .btn.add_to_shopcart{
-    color:#99CC99;
+    color:#cccccc;
     background-color:#EBF5EB;
   }
 

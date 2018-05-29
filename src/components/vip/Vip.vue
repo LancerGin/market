@@ -1,10 +1,8 @@
 <template>
   <div class="user">
     <div class="head">
-      <img src="" alt="">
-      <div class="slog">
-        亲爱的小伙伴，欢迎光临 潮流设计小店
-      </div>
+      <img v-bind:src="logo.url" alt="">
+      <div class="slog">{{logo.slogan}}</div>
     </div>
     <div class="order">
       <div class="orderlist">
@@ -26,7 +24,7 @@
         </div>
       </div>
       <group>
-        <cell title="全部订单" is-link>
+        <cell title="全部订单" is-link v-on:click.native="turnTo('/orderlist')">
           <i slot="icon" width="20" style="display:block;margin-right:.16rem;" class="fa fa-file-text-o" aria-hidden="true"></i>
         </cell>
       </group>
@@ -90,6 +88,10 @@ export default {
 
   data() {
     return {
+      logo:{
+        url:"../../static/img/logo.png",
+        slogan:"亲爱的小伙伴，欢迎光临 潮流设计小店"
+      },
       showToast:false,
       toastMsg:""
     };
@@ -111,21 +113,32 @@ export default {
 .user{
   font-size:.16rem;
   text-align: left;
+  padding-bottom:.8rem;
+}
+.user .weui-cell{
+  font-size:.14rem;
+  padding:.13rem .2rem;
 }
 
 .head{
   width:100%;
-  height:1.8rem;
+  height:2rem;
   background-color: #99CC99;
   position: relative;
+  text-align: center;
+}
+.head img{
+  width:2rem;
+  height:2rem;
 }
 .head .slog{
   width:100%;
   height:0.36rem;
   line-height:0.36rem;
+  text-align: left;
   padding-left: .1rem;
   font-size: .14rem;
-  background-color: rgba(127,127,127,.9);
+  background-color: rgba(127,127,127,.7);
   color:#ffffff;
   position: absolute;
   bottom: 0;

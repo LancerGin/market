@@ -8,6 +8,7 @@ import Details from '@/components/details/Details'
 import MakeOrder from '@/components/order/MakeOrder'
 import ShopCart from '@/components/shopcart/ShopCart'
 import Vip from '@/components/vip/Vip'
+import OrderList from '@/components/order/OrderList'
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
       path: '/vip',
       name: 'Vip',
       component: Vip
+    },
+    {
+      path: '/orderlist',
+      name: 'OrderList',
+      component: OrderList
     }
   ]
 })

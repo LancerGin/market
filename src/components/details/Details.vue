@@ -75,14 +75,11 @@
       <div class="house" v-on:click="turnTo('/')">
         <i class="fa fa-home" aria-hidden="true"></i>
       </div>
-      <div class="classification" v-on:click="turnTo('/classification')">
-        <span>商品分类</span>
-      </div>
       <div class="shopping_cart" v-on:click="turnTo('/shopcart')">
         <span>购物车</span>
       </div>
-      <div class="vip" v-on:click="turnTo('/vip')">
-        <span>会员中心</span>
+      <div class="buynow" v-on:click="toChoose">
+        <span>立即购买</span>
       </div>
     </div>
     <!-- 弹出选择规格的面板 开始-->
@@ -106,7 +103,7 @@
       return {
         proid:"",
         logo:{
-          url:"../../static/img/1.png",
+          url:"../../static/img/logo.png",
           title:"潮流设计小店",
           dos:{
             name:"会员中心",
@@ -214,7 +211,7 @@
     height:.28rem;
     margin: .06rem;
     border-radius:.14rem;
-    background-color:#BFBFBF;
+    background-color:#99CC99;
     overflow: hidden;
   }
   .top .back_home span{
@@ -294,7 +291,7 @@
     width:.5rem;
     height:.5rem;
     margin: .06rem .1rem .06rem 0;
-    background-color:#BFBFBF;
+    background-color:#99CC99;
     overflow: hidden;
   }
   .shop .shop_info{
@@ -353,6 +350,10 @@
   .navbar>div.house{
     flex-grow: 1;
     color:#999999;
+  }
+  .navbar>div.buynow{
+    color:#ffffff;
+    background-color:#99CC99;
   }
 
   .choosespec_container{
