@@ -32,17 +32,20 @@
         <span>会员中心</span>
       </div>
     </div>
+    <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
 import {SearchBar,Button} from 'vue-weui';
+import { Loading } from 'vux';
 import HotArea from '@/components/home/HotArea.vue';
 
 export default {
   name: 'home',
   data () {
     return {
+      loading:false,
       slides:[],
       hotWords: [],
       hotArea:[]
@@ -51,7 +54,8 @@ export default {
   components: {
     'search-bar':SearchBar,
     'weui-button': Button,
-    'hot-area':HotArea
+    'hot-area':HotArea,
+    Loading
   },
   mounted (){
     this.getIndexInfo();
@@ -75,8 +79,10 @@ export default {
               });
     },
     getIndexInfo(){
+      this.loading=true;
       this.$http.get(this.GLOBAL.serverSrc + "rest/index/search",{credentials: false})
                 .then(function (response) {
+                  this.loading=false;
                   if(response.data.code==="0000"){
                     let obj =  response.data.data;
                     let banners = obj.banner;
@@ -107,6 +113,7 @@ export default {
 <style scoped>
   .home{
     padding-bottom:.6rem;
+    font-size: .14rem;
   }
   .swiper {
       height: 1.8rem;

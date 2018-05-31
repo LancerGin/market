@@ -88,19 +88,21 @@
     </div>
     <!-- 信息提示 结束-->
     <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
+    <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
   import {Button,CellsTitle, CellsTips,
     Cells, Cell, LinkCell,Icon} from 'vue-weui';
-  import { Toast } from 'vux';
+  import { Toast,Loading } from 'vux';
   import ChooseSpec from '@/components/common/ChooseSpec.vue';
 
   export default {
     name: 'Details',
     data () {
       return {
+        loading:false,
         proid:"",
         logo:{
           url:"../../static/img/logo.png",
@@ -126,7 +128,8 @@
       LinkCell,
       Icon,
       Toast,
-      ChooseSpec
+      ChooseSpec,
+      Loading
     },
     mounted (){
       this.getParams();
@@ -144,8 +147,10 @@
         this.getDetails();
       },
       getDetails(){
+        this.loading=true;
         this.$http.get(this.GLOBAL.serverSrc + "rest/product/"+this.proid,{credentials: false})
                   .then(function (response) {
+                    this.loading=false;
                     if(response.data.code==="0000"){
                       this.formatterData(response.data.data);
                     }else{
@@ -188,6 +193,7 @@
   .details{
     position: relative;
     background-color:#f2f2f2;
+    font-size: .14rem;
   }
   .details.noscroll{
     position: fixed;

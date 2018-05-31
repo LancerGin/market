@@ -79,12 +79,13 @@
       </div>
       <!-- 信息提示 -->
       <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
+      <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
 import {Icon,CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
-import { Toast } from 'vux';
+import { Toast,Loading } from 'vux';
 
 export default {
   name: 'ShopCart',
@@ -93,6 +94,7 @@ export default {
   },
   data () {
     return {
+      loading:false,
       page:"1",
       size:"20",
       canedit:false,
@@ -121,14 +123,17 @@ export default {
     Cells,
     Cell,
     LinkCell,
-    Toast
+    Toast,
+    Loading
   },
   methods: {
     renderField(){
+      this.loading=true;
       this.$http.get(this.GLOBAL.serverSrc + "rest/shopcar/search"+
       "?size="+this.size+"&page="+this.page,
       {credentials: false})
                 .then(function (response) {
+                  this.loading=false;
                   if(response.data.code==="0000"){
                       this.formatData(response.data.data);
                   }else{
@@ -306,8 +311,10 @@ export default {
           params.push(productArr[i].shopcartid);
         }
       }
+      this.loading=true;
       this.$http.post(this.GLOBAL.serverSrc + "rest/shopcar/checkproducts",params,{credentials: false})
                 .then(function (response) {
+                  this.loading=false;
                   if(response.data.code==="0000"){
                       this.$router.push({ name: 'MakeOrder', params: { key: "fromShopcart",value: response.data.data.out_trade_no}});
                   }else{

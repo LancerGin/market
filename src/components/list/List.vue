@@ -1,10 +1,13 @@
 <!-- 商品列表 -->
 <template>
-  <div>
+  <div class="product_list">
     <div class="list">
       <list-item v-for="(item, key) in list" :key="key" v-bind:listItem="item" />
       <div v-if="list.length===0" class="nodata">没有找到相关商品QAQ</div>
     </div>
+    <p v-if="loading" style="text-align:center;width:100%;">
+      <span style="vertical-align:middle;display:inline-block;font-size:14px;">加载中&nbsp;&nbsp;</span><inline-loading></inline-loading>
+    </p>
     <div v-if="list.length!=0&&nomore" class="nomore">
       <span>没有更多啦~</span>
     </div>
@@ -12,13 +15,14 @@
 </template>
 
 <script>
-
+  import { InlineLoading } from 'vux'
   import ListItem from '@/components/common/ListItem.vue';
 
   export default {
     name: 'List',
     data () {
       return {
+        loading:false,
         sValue:"", //查询列表的条件值
         sKey:"",   //查询列表的方式
         keywords:"",
@@ -35,6 +39,7 @@
       this.getParams();
     },
     components: {
+      InlineLoading,
       'list-item': ListItem
     },
     methods: {
@@ -51,6 +56,7 @@
         this.getList();
       },
       getList(){
+        this.loading=true;
         this.requestIsBack = false;
         if(this.sKey==="byCutpage"){
           this.$http.post(this.GLOBAL.serverSrc + "rest/index/cutpage",{
@@ -102,6 +108,7 @@
 
       },
       pushData(msg){
+        this.loading=false;
         let obj = msg;
         let len = obj.length;
         //返回的数据条数不足 this.pageSize，说明是最后一页了
@@ -170,7 +177,9 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.product_list{
+  font-size: .14rem;
+}
 .list{
   width: 100%;
   padding: 1%;

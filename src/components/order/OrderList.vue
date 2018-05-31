@@ -4,7 +4,7 @@
       <h3 class="title" v-bind:class="'status'+order.status">
         {{order.statusinfo}}
         <b v-if="order.status===1" v-bind="timeout(order)">({{order.showTime}})</b>
-        <span>订单详情 ></span>
+        <span v-on:click="lookDetails('fromlist',order)">订单详情 ></span>
       </h3>
       <div class="product">
         <div class="img">
@@ -19,11 +19,14 @@
         <cell v-bind:title="order.createtime"><span style="color:#646464;">合计:￥{{order.paycash}}</span></cell>
         <cell v-if="order.status===1"><div class="btn pay_now">立即付款</div></cell>
         <cell v-else-if="order.status===2"><div class="btn alarm">提醒卖家</div></cell>
-        <cell v-else-if="order.status===3"><div class="btn lookex">查看物流</div><div class="btn comfirm">确认收货</div></cell>
-        <cell v-else-if="order.status===4"><div class="btn lookex">查看物流</div><div class="btn delete">删除</div></cell>
+        <cell v-else-if="order.status===3"><div class="btn lookex" v-on:click="lookExpress('fromlist',order)">查看物流</div><div class="btn comfirm">确认收货</div></cell>
+        <cell v-else-if="order.status===4"><div class="btn lookex" v-on:click="lookExpress('fromlist',order)">查看物流</div><div class="btn delete">删除</div></cell>
         <cell v-else-if="order.status===5"><div class="btn delete">删除</div></cell>
       </group>
     </div>
+    <p v-if="loading" style="text-align:center;width:100%;">
+      <span style="vertical-align:middle;display:inline-block;font-size:14px;">加载中&nbsp;&nbsp;</span><inline-loading></inline-loading>
+    </p>
     <div v-if="orderArr.length===0" class="nodata">无订单记录QAQ</div>
     <div v-if="orderArr.length!=0&&nomore" class="nomore">
       <span>没有更多啦~</span>
@@ -49,6 +52,7 @@ export default {
 
   data() {
     return {
+      loading:false,
       sValue:0, //查询列表的条件值
       showpage:1, //页码
       pageSize:10, //分页后每次请求的数据量
@@ -75,6 +79,7 @@ export default {
       this.getOrderList();
     },
     getOrderList(){
+      this.loading=true;
       this.requestIsBack = false;
       let params = {};
       if(this.sValue===0){
@@ -104,6 +109,7 @@ export default {
               });
     },
     pushData(msg){
+      this.loading=false;
       let obj = msg;
       let len = obj.length;
       //返回的数据条数不足 this.pageSize，说明是最后一页了
@@ -191,6 +197,12 @@ export default {
     showTips(msg){
       this.toastMsg=msg;
       this.showToast=true;
+    },
+    lookDetails(key,value){
+      this.$router.push({ name: 'OrderDetails', params: { key: key,value: value}});
+    },
+    lookExpress(key,value){
+      this.$router.push({ name: 'ExpressInfo', params: { key: key,value: value}});
     }
   }
 }
@@ -264,7 +276,7 @@ export default {
 .orders .btn{
   float: left;
   margin-left:.1rem;
-  font-size: .12rem;
+  font-size: .14rem;
   padding: .04rem .06rem .02rem .06rem;
   color:#646464;
   background-color:#ffffff;
