@@ -1,31 +1,30 @@
 <template>
-  <div class="express">
+  <div class="express" v-if="sValue">
     <div class="head">
-      <p>快递：圆通快递</p>
-      <p>快递单号：1236547899522</p>
-      <p>物流状态：<b>已签收</b></p>
+      <div class="img">
+        <img v-bind:src="sValue.productinfo.img" alt="">
+      </div>
+      <p>快递：{{name}}</p>
+      <p>快递单号：{{number}}</p>
+      <p>物流状态：<b>{{statusinfo}}</b></p>
     </div>
-    <div class="timeline">
+    <div class="timeline" v-if="expressArr.length>0">
       <timeline>
-  			<timeline-item>
-  				<h4 class="recent">【广东】 广州市 已发出</h4>
-  				<p class="recent">2016-04-17 12:00:00</p>
-  			</timeline-item>
-  			<timeline-item>
-  				<h4> 申通快递员 广东广州 收件员 xxx 已揽件</h4>
-  				<p>2016-04-16 10:23:00</p>
-  			</timeline-item>
-  			<timeline-item>
-  				<h4> 商家正在通知快递公司揽件</h4>
-  				<p>2016-04-15 9:00:00</p>
+  			<timeline-item v-for="(express,key) in expressArr" v-bind:key="key">
+  				<h4 v-if="key===0" class="recent">{{express.AcceptStation}}</h4>
+          <h4 v-else>{{express.AcceptStation}}</h4>
+  				<p v-if="key===0" class="recent">{{express.AcceptTime}}</p>
+          <p v-else>{{express.AcceptTime}}</p>
   			</timeline-item>
   		</timeline>
     </div>
+
+    <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
-import { Timeline, TimelineItem, XButton } from 'vux';
+import { Timeline, TimelineItem,Loading } from 'vux';
 export default {
   name:"ExpressInfo",
   props: {
@@ -34,13 +33,19 @@ export default {
 
   components: {
     Timeline,
-    TimelineItem,
-    XButton
+    "timeline-item":TimelineItem,
+    Loading
   },
 
   data(){
     return{
-      sValue:undefined
+      loading:false,
+      sValue:undefined,
+      number:"",
+      name:"",
+      status:null,
+      statusinfo:"",
+      expressArr:[]
     }
   },
   mounted(){
@@ -56,16 +61,22 @@ export default {
         params = JSON.parse(sessionStorage.getItem('express_params'));
       }
       this.$set(this,"sValue",params.value);
-      console.log(this.sValue);
-      // this.getExpressInfo();
+      this.getExpressInfo();
     },
     getExpressInfo(){
-      this.$http.post(this.GLOBAL.serverSrc + "rest/",{
-
-      },{credentials: false})
+      let expcode = this.sValue.expcode;
+      let expnumber = this.sValue.expnumber;
+      this.loading=true;
+      this.$http.get(this.GLOBAL.serverSrc + "rest/fastmeil/search?expcode="+expcode+
+      "&expnumber="+expnumber,{credentials: false})
                 .then(function (response) {
+                  this.loading=false;
                   if(response.data.code==="0000"){
-
+                      this.$set(this,"expressArr",response.data.data.list);
+                      this.$set(this,"name",response.data.data.name);
+                      this.$set(this,"number",response.data.data.number);
+                      this.$set(this,"status",response.data.data.status);
+                      this.$set(this,"statusinfo",response.data.data.statusinfo);
                   }else{
                       alert(response.data.msg)
                   }
@@ -87,10 +98,18 @@ export default {
   width:100%;
   background-color: #ffffff;
   padding:.1rem .2rem;
+  position: relative;
+}
+.express .head .img{
+  position: absolute;
+  width:.8rem;
+  height:.8rem;
+  background-color: #cccccc;
 }
 .express .head p{
   display: block;
   line-height: .28rem;
+  padding-left:1rem;
 }
 .express .head p b{
   color:#FF6600;

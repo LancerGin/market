@@ -106,14 +106,15 @@
 
     <div class="dos">
       <group>
-        <cell v-if="order.status===1"><div class="btn pay_now">立即付款</div></cell>
-        <cell v-else-if="order.status===2"><div class="btn alarm">提醒卖家</div></cell>
-        <cell v-else-if="order.status===3"><div class="btn lookex">查看物流</div><div class="btn comfirm">确认收货</div></cell>
-        <cell v-else-if="order.status===4"><div class="btn lookex">查看物流</div><div class="btn delete">删除</div></cell>
-        <cell v-else-if="order.status===5"><div class="btn delete">删除</div></cell>
+        <cell v-if="order.status===1"><div class="btn pay_now" v-on:click="payNow(order.orderid)">立即付款</div></cell>
+        <cell v-else-if="order.status===2"><div class="btn alarm" v-on:click="reminding(order.orderid)">提醒卖家</div></cell>
+        <cell v-else-if="order.status===3"><div class="btn lookex" v-on:click="lookExpress('fromDetails',order)">查看物流</div><div class="btn comfirm" v-on:click="receiveProduct(order.orderid)">确认收货</div></cell>
+        <cell v-else-if="order.status===4"><div class="btn lookex" v-on:click="lookExpress('fromDetails',order)">查看物流</div><div class="btn delete" v-on:click="deleteOrder(order.orderid)">删除</div></cell>
+        <cell v-else-if="order.status===5"><div class="btn delete" v-on:click="deleteOrder(order.orderid)">删除</div></cell>
       </group>
     </div>
-
+    <!-- 信息提示 -->
+    <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
@@ -138,7 +139,9 @@
         switchOn:false, //短信通知
         cashCount:0,//总价
         address:{},//地址
-        chooseAddressBorn:false
+        chooseAddressBorn:false,
+        showToast:false,
+        toastMsg:""
       }
     },
     mounted(){
@@ -202,6 +205,87 @@
         let minutes = m<10?"0"+m:m;
         let seconds = s<10?"0"+s:s;
         return minutes + " : " + seconds
+      },
+      showTips(msg){
+        this.toastMsg=msg;
+        this.showToast=true;
+      },
+      lookExpress(key,value){
+        this.$router.push({ name: 'ExpressInfo', params: { key: key,value: value}});
+      },
+      reminding(id){
+        this.showTips("提醒成功");
+        this.lookList('all',0);
+        // this.$http.get(this.GLOBAL.serverSrc + "rest/",{credentials: false})
+        //           .then(function (response) {
+        //             if(response.data.code==="0000"){
+        //                 this.showTips(response.data.msg)
+        //             }else{
+        //                 this.showTips(response.data.msg)
+        //             }
+        //           })
+        //         .catch(function (response) {
+        //             console.log("提醒卖家-请求错误：", response)
+        //         });
+      },
+      payNow(id){
+        this.$http.get(this.GLOBAL.serverSrc + "rest/pay/orderid?orderid="+id,{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                        this.collet(response.data.data)
+                    }else{
+                        this.showTips(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("立即支付-请求错误：", response)
+                });
+      },
+      collet(e){
+          WeixinJSBridge.invoke('getBrandWCPayRequest', e ,function(res){
+              WeixinJSBridge.log(res.err_msg);
+              //alert(res.err_code + res.err_desc + res.err_msg);
+              if(res.err_msg == "get_brand_wcpay_request:ok"){
+                  alert("支付成功！");
+                  this.lookList('all',0);
+              }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                  alert("用户取消支付!");
+              }else{
+                  alert(res.err_code+res.err_desc+res.err_msg);
+                  alert("支付失败!");
+              }
+          })
+      },
+      deleteOrder(id){
+        this.$http.get(this.GLOBAL.serverSrc + "rest/order/deleteOrderId/"+id,{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                        this.showTips(response.data.msg);
+                        this.lookList('all',0);
+                    }else{
+                        this.showTips(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("删除订单-请求错误：", response)
+                });
+      },
+      receiveProduct(id){
+        this.$http.get(this.GLOBAL.serverSrc + "rest/order/receiveProduct/"+id,{credentials: false})
+                  .then(function (response) {
+                    if(response.data.code==="0000"){
+                        this.showTips(response.data.msg);
+                        this.lookList('all',0);
+                    }else{
+                        this.showTips(response.data.msg)
+                    }
+                  })
+                .catch(function (response) {
+                    console.log("确认收货-请求错误：", response)
+                });
+      },
+      lookList(key,value){
+        this.$router.push({ name: 'OrderList', params: { key: key,value: value}});
       }
     }
   }

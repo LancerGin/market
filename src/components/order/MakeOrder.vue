@@ -73,17 +73,21 @@
       <ChooseAddress v-on:close-pannel="close" v-on:change-address="changeAddress"></ChooseAddress>
     </div>
     <!-- 弹出选择收货地址的面板 结束-->
+
+    <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
   import {CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
+  import { Loading } from 'vux';
   import ChooseAddress from '@/components/order/ChooseAddress.vue';
 
   export default {
     name: 'MakeOrder',
     data () {
       return {
+        loading:false,
         orderid:'',
         productArr:[], //商品列表
         remark:"", //留言
@@ -102,7 +106,8 @@
       Cells,
       Cell,
       LinkCell,
-      ChooseAddress
+      ChooseAddress,
+      Loading
     },
     methods: {
       getParams(){
@@ -117,9 +122,11 @@
         this.getOrderData();
       },
       getOrderData(){
+        this.loading = true;
         this.$http.get(this.GLOBAL.serverSrc + "rest/shopcar/orderInfo/"+this.orderid,
         {credentials: false})
                   .then(function (response) {
+                    this.loading = false;
                     if(response.data.code==="0000"){
                         this.formatData(response.data.data);
                     }else{
@@ -157,6 +164,7 @@
         this.$set(this,"address",obj.address);
       },
       comfirOrder(){
+        this.loading = true;
         this.$http.post(this.GLOBAL.serverSrc + "rest/order/addOrder",{
           "out_trade_no":this.orderid,
         	"payentrance":"1",
@@ -167,9 +175,9 @@
         	}
         },{credentials: false})
                   .then(function (response) {
+                    this.loading = false;
                     if(response.data.code==="0000"){
-                        //跳转到订单列表页，并查询未付款订单
-                        this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
+                        this.collet(response.data.data);
                     }else{
                         alert(response.data.msg)
                     }
@@ -177,6 +185,28 @@
                 .catch(function (response) {
                     console.log("提交订单-请求错误：", response)
                 });
+      },
+      collet(e){
+          WeixinJSBridge.invoke('getBrandWCPayRequest', e ,function(res){
+              WeixinJSBridge.log(res.err_msg);
+              //alert(res.err_code + res.err_desc + res.err_msg);
+              if(res.err_msg == "get_brand_wcpay_request:ok"){
+                  alert("支付成功！");
+                  this.refreshData();
+                  //跳转到订单列表页，并查询所有订单
+                  this.$router.push({ name: 'OrderList', params: { key: "all",value: 0}});
+              }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                  alert("用户取消支付!");
+                  //跳转到订单列表页，并查询未付款订单
+                  this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
+              }else{
+                  alert(res.err_code+res.err_desc+res.err_msg);
+                  alert("支付失败!");
+                  //跳转到订单列表页，并查询未付款订单
+                  this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
+              }
+
+          })
       },
       chooseAddress(){
         this.chooseAddressBorn=true;

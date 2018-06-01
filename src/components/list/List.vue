@@ -29,7 +29,7 @@
         typechild:"",
         type:"",
         showpage:1, //页码
-        pageSize:8, //分页后每次请求的数据量
+        pageSize:20, //分页后每次请求的数据量
         nomore:false, //判断是否最后一页数据
         requestIsBack:false, //判断发送的请求是否响应
         list :[]

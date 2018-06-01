@@ -34,28 +34,37 @@
         <span>会员中心</span>
       </div>
     </div>
+
+    <loading :show="loading"></loading>
   </div>
 </template>
 
 <script>
+  import { Loading } from 'vux';
 
   export default {
     name: 'Classification',
     data () {
       return {
+        loading:false,
         navs:[],
         selected:0,
         img:'',
         typeChildList:[]
       }
     },
+    components: {
+      Loading
+    },
     mounted (){
       this.getProductType();
     },
     methods: {
       getProductType(){
+        this.loading=true;
         this.$http.get(this.GLOBAL.serverSrc + "rest/producttype/search",{credentials: false})
                   .then(function (response) {
+                    this.loading=false;
                     if(response.data.code==="0000"){
                       let obj =  response.data.data;
                       this.$set(this,"navs",obj);
@@ -86,6 +95,10 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
+  .classification{
+    font-size:.16rem;
+  }
+  
   .navs{
     width:.7rem;
     height:100%;
