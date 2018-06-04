@@ -112,7 +112,7 @@ export default {
                   if(response.data.code==="0000"){
                       this.$set(this,"num",response.data.data)
                   }else{
-                      alert(response.data.msg)
+                      
                   }
                 })
               .catch(function (response) {

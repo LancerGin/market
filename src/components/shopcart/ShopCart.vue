@@ -137,7 +137,7 @@ export default {
                   if(response.data.code==="0000"){
                       this.formatData(response.data.data);
                   }else{
-                      alert(response.data.msg)
+                      this.showTips(response.data.msg)
                   }
                 })
               .catch(function (response) {
@@ -260,12 +260,11 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.canedit=false;
-                      this.toastMsg=response.data.msg;
-                      this.showToast=true;
+                      this.showTips(response.data.msg)
                       //把勾选的购物车id放进数组
                       this.pushCheckedid();
                   }else{
-                      alert(response.data.msg)
+                      this.showTips(response.data.msg)
                   }
                 })
               .catch(function (response) {
@@ -290,12 +289,11 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.productArr.splice(index,1);
-                      this.toastMsg=response.data.msg;
-                      this.showToast=true;
+                      this.showTips(response.data.msg)
                       //把勾选的购物车id放进数组
                       this.pushCheckedid();
                   }else{
-                      alert(response.data.msg)
+                      this.showTips(response.data.msg)
                   }
                 })
               .catch(function (response) {
@@ -318,12 +316,16 @@ export default {
                   if(response.data.code==="0000"){
                       this.$router.push({ name: 'MakeOrder', params: { key: "fromShopcart",value: response.data.data.out_trade_no}});
                   }else{
-                      alert(response.data.msg)
+                      this.showTips(response.data.msg)
                   }
                 })
               .catch(function (response) {
                   console.log("结算-请求错误：", response)
               });
+    },
+    showTips(msg){
+      this.toastMsg=msg;
+      this.showToast=true;
     }
 
   }

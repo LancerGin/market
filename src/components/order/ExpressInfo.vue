@@ -78,7 +78,7 @@ export default {
                       this.$set(this,"status",response.data.data.status);
                       this.$set(this,"statusinfo",response.data.data.statusinfo);
                   }else{
-                      alert(response.data.msg)
+                      
                   }
                 })
               .catch(function (response) {

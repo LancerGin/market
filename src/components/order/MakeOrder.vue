@@ -4,10 +4,14 @@
     <div class="receiving">
       <cells type="access">
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
-          <span slot="body">
+          <span v-if="address.receivename" slot="body">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
             <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
             <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
+          </span>
+          <span v-else slot="body">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            <span class="noaddress">添加收货地址</span>
           </span>
           <span slot="footer"></span>
         </link-cell>
@@ -31,7 +35,7 @@
         </cell>
         <cell>
           <span slot="body">运费：</span>
-          <span slot="footer">+<span class="rmb">￥</span>{{bag.otherprice}}</span>
+          <span slot="footer">+<span class="rmb">￥</span>{{bag.postage}}</span>
         </cell>
         <!-- <div class="coupon">
           <cells type="access">
@@ -75,12 +79,14 @@
     <!-- 弹出选择收货地址的面板 结束-->
 
     <loading :show="loading"></loading>
+    <!-- 信息提示 -->
+    <toast v-model="showToast" type="text" :time="1500" is-show-mask :text="toastMsg" :position="'middle'"></toast>
   </div>
 </template>
 
 <script>
   import {CellsTitle, CellsTips,Cells, Cell, LinkCell} from 'vue-weui';
-  import { Loading } from 'vux';
+  import { Loading,Toast } from 'vux';
   import ChooseAddress from '@/components/order/ChooseAddress.vue';
 
   export default {
@@ -94,7 +100,9 @@
         switchOn:false, //短信通知
         cashCount:0,//总价
         address:{},//地址
-        chooseAddressBorn:false
+        chooseAddressBorn:false,
+        showToast:false,
+        toastMsg:""
       }
     },
     created(){
@@ -107,6 +115,7 @@
       Cell,
       LinkCell,
       ChooseAddress,
+      Toast,
       Loading
     },
     methods: {
@@ -130,7 +139,7 @@
                     if(response.data.code==="0000"){
                         this.formatData(response.data.data);
                     }else{
-                        alert(response.data.msg)
+                        this.showTips(response.data.msg);
                     }
                   })
                 .catch(function (response) {
@@ -140,7 +149,6 @@
       formatData(obj){
         let arr = obj.products;
         let newArr =[];
-        let otherprice = 10;//运费10元
         for(let i=0;i<arr.length;i++){
           newArr.push({
             proid:arr[i].proid,
@@ -150,11 +158,11 @@
             spec:arr[i].spec,
             prodescribe:arr[i].prodescribe,
             price:arr[i].price,
+            postage:arr[i].freight, //运费
             checked:false,
             count:arr[i].number,
             totalproprice:(parseFloat(arr[i].price)*(arr[i].number)).toFixed(2),//商品总额
-            otherprice:otherprice.toFixed(2),  //运费
-            totalprice:(parseFloat(arr[i].price)*(arr[i].number)+otherprice).toFixed(2),//合计
+            totalprice:(parseFloat(arr[i].price)*(arr[i].number)+parseFloat(arr[i].freight)).toFixed(2),//合计
             min:1,
             max:99
           });
@@ -179,7 +187,7 @@
                     if(response.data.code==="0000"){
                         this.collet(response.data.data);
                     }else{
-                        alert(response.data.msg)
+                        this.showTips(response.data.msg);
                     }
                   })
                 .catch(function (response) {
@@ -224,14 +232,18 @@
         },{credentials: false})
                   .then(function (response) {
                     if(response.data.code==="0000"){
-
+                        this.showTips(response.data.msg)
                     }else{
-                        alert(response.data.msg)
+                        this.showTips(response.data.msg)
                     }
                   })
                 .catch(function (response) {
                     console.log("更改默认地址-请求错误：", response)
                 });
+      },
+      showTips(msg){
+        this.toastMsg=msg;
+        this.showToast=true;
       },
       close(){
         this.chooseAddressBorn=false;
@@ -243,6 +255,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .make_order{
+    padding-bottom:.6rem;
     text-align: left;
     font-size:.13rem;
     color:#000;
@@ -291,6 +304,11 @@
     left: .1rem;
     font-size:.2rem;
     color:#646464;
+  }
+  .receiving .noaddress{
+    font-size:.13rem;
+    color:#000;
+    padding-left: .2rem;
   }
 
   .bags{

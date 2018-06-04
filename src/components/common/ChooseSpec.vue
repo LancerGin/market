@@ -162,7 +162,7 @@ export default {
                   if(response.data.code==="0000"){
                       this.showToast(response.data.msg);
                   }else{
-                      alert(response.data.msg)
+                      this.showToast(response.data.msg);
                   }
                 })
               .catch(function (response) {
@@ -178,7 +178,7 @@ export default {
                   if(response.data.code==="0000"){
                       this.$router.push({ name: 'MakeOrder', params: { key: "fromDetails",value: response.data.data.out_trade_no}});
                   }else{
-                      alert(response.data.msg)
+                      this.showToast(response.data.msg);
                   }
                 })
               .catch(function (response) {
@@ -190,7 +190,7 @@ export default {
     },
     showToast (msg) {
       this.$emit('close-pannel',msg);
-    },
+    }
   }
 }
 </script>

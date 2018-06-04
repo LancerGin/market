@@ -63,8 +63,8 @@ export default {
   },
   methods: {
     getUserInfo(){
-      const code = location.href.split("?code=")[1]||'';
-      const oldToken = sessionStorage.getItem('STORAGE_TOKEN')||'';
+      let code = location.href.split("?code=")[1]||'';
+      let oldToken = sessionStorage.getItem('STORAGE_TOKEN')||'';
       this.$http.get(this.GLOBAL.serverSrc + "rest/user/login" +"?code="+code+"&token="+oldToken,{credentials: false})
                 .then(function (response) {
                   if(response.data.code==="0000"){
@@ -110,32 +110,35 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
   .home{
     padding-bottom:.6rem;
     font-size: .14rem;
   }
-  .swiper {
+  .home .swiper {
       height: 1.8rem;
   }
-  .cover_search{
+  .home .cover_search{
       width: 100%;
       height: .44rem;
       position: absolute;
-      top: 2rem;
+      top: 1.8rem;
       left: 0;
       z-index:11;
   }
-  .hot_words{
+  .home .weui-toast{
+    top:2.5rem;
+  }
+  .home .hot_words{
     background-color: #ffffff;
   }
-  .hot_words:after{
+  .home .hot_words:after{
     content: "\0020";
     display: block;
     height: 0;
     clear: both;
   }
-  .hot_words ul li{
+  .home .hot_words ul li{
     display: block;
     float: left;
     width: 25%;
@@ -145,12 +148,12 @@ export default {
     color:#99CC99;
   }
 
-  .nomore{
+  .home .nomore{
     font-size:.12rem;
     padding: .1rem 0;
   }
 
-  .navbar{
+  .home .navbar{
     position: fixed;
     bottom:0;
     left:0;
@@ -163,17 +166,17 @@ export default {
     display: flex;
     justify-content: space-between;
   }
-  .navbar>div{
+  .home .navbar>div{
     height:.54rem;
     line-height:.54rem;
     background-color:#ffffff;
     margin-left:1px;
     flex-grow: 2;
   }
-  .navbar>div span{
+  .home .navbar>div span{
     font-size:.14rem;
   }
-  .navbar>div.house{
+  .home .navbar>div.house{
     flex-grow: 1;
     color:#999999;
   }

@@ -89,9 +89,9 @@
       </group>
     </div>
 
-    <group>
+    <!-- <group>
       <cell class="remark" title="买家留言:"><p>{{order.remarks}}</p></cell>
-    </group>
+    </group> -->
     <group class="priceinfo">
       <cell title="总计:"><span class="rmb">￥</span>{{order.paycash}}</cell>
       <cell title="付款方式:">微信支付</cell>

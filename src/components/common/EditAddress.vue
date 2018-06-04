@@ -127,7 +127,7 @@ export default {
                       this.$set(this,"address",address.addressinfo);
                       this.$set(this,"postalcode",address.postcode);
                   }else{
-                      alert(response.data.msg)
+                      
                   }
                 })
               .catch(function (response) {

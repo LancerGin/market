@@ -110,7 +110,7 @@ export default {
                       this.pushData(response.data.data);
                       this.onScroll();
                   }else{
-                      alert(response.data.msg)
+
                   }
                 })
               .catch(function (response) {
