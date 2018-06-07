@@ -242,12 +242,13 @@
                 });
       },
       collet(e){
+          let _this = this;
           WeixinJSBridge.invoke('getBrandWCPayRequest', e ,function(res){
               WeixinJSBridge.log(res.err_msg);
               //alert(res.err_code + res.err_desc + res.err_msg);
               if(res.err_msg == "get_brand_wcpay_request:ok"){
                   alert("支付成功！");
-                  this.lookList('all',0);
+                  _this.lookList('all',0);
               }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
                   alert("用户取消支付!");
               }else{

@@ -4,7 +4,7 @@
     <div class="receiving">
       <cells type="access">
         <link-cell link="javascript:void(0);" v-on:click.native="chooseAddress">
-          <span v-if="address.receivename" slot="body">
+          <span v-if="address" slot="body">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
             <span class="people">收货人：{{address.receivename}}&nbsp;&nbsp;&nbsp;&nbsp;{{address.tel}}</span><br>
             <span class="address">收货地址：{{address.province+address.city+address.addressinfo}}</span>
@@ -195,23 +195,23 @@
                 });
       },
       collet(e){
+          let _this = this;
           WeixinJSBridge.invoke('getBrandWCPayRequest', e ,function(res){
               WeixinJSBridge.log(res.err_msg);
               //alert(res.err_code + res.err_desc + res.err_msg);
               if(res.err_msg == "get_brand_wcpay_request:ok"){
                   alert("支付成功！");
-                  this.refreshData();
                   //跳转到订单列表页，并查询所有订单
-                  this.$router.push({ name: 'OrderList', params: { key: "all",value: 0}});
+                  _this.$router.push({ name: 'OrderList', params: { key: "all",value: 0}});
               }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
                   alert("用户取消支付!");
                   //跳转到订单列表页，并查询未付款订单
-                  this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
+                  _this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
               }else{
                   alert(res.err_code+res.err_desc+res.err_msg);
                   alert("支付失败!");
                   //跳转到订单列表页，并查询未付款订单
-                  this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
+                  _this.$router.push({ name: 'OrderList', params: { key: "wait_pay",value: 1}});
               }
 
           })

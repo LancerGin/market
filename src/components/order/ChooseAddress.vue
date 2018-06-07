@@ -110,8 +110,11 @@ export default {
                 .then(function (response) {
                   if(response.data.code==="0000"){
                       this.$set(this,"addressArr",response.data.data);
+                      if(this.addressArr.length===0){
+                        this.newAddress();
+                      }
                   }else{
-                      
+
                   }
                 })
               .catch(function (response) {

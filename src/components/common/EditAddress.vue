@@ -1,7 +1,6 @@
 <!-- 编辑收货地址 -->
 <template>
   <div class="edit_address">
-    <div class="zz"></div>
     <div class="pan">
       <div class="head">
         <div class="title">编辑收货地址</div>
@@ -127,7 +126,7 @@ export default {
                       this.$set(this,"address",address.addressinfo);
                       this.$set(this,"postalcode",address.postcode);
                   }else{
-                      
+
                   }
                 })
               .catch(function (response) {
@@ -203,8 +202,10 @@ export default {
     left:0;
     z-index: 60;
     width:100%;
-    height:120%;
+    height:100%;
+    overflow: auto;
     text-align: left;
+    background-color: rgba(0,0,0,1);
   }
   .edit_address .weui_input{
     font-size: .14rem;
@@ -212,25 +213,16 @@ export default {
   .edit_address .weui_cell_ft{
     flex-grow: 1;
   }
-  .zz{
-    width:100%;
-    height:120%;
-    background-color: rgba(0,0,0,.7);
-  }
   .pan{
     width:100%;
     background-color:#ffffff;
-    position: fixed;
-    bottom:0;
-    left:0;
-    z-index: 70;
     font-size: .16rem;
     animation: DWONTOUP .4s;
   }
   @keyframes DWONTOUP
   {
-      from {bottom: -3rem;}
-      to {bottom: 0;}
+      from {transform: translateY(-3rem);}
+      to {transform: translateY(0);}
   }
   .pan .head{
     width:100%;
